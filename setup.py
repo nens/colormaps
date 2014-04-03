@@ -10,6 +10,7 @@ long_description = '\n\n'.join([
 
 install_requires = [
     'setuptools',
+    'scipy',
     ],
 
 tests_require = [
@@ -19,13 +20,13 @@ tests_require = [
 
 setup(name='colormaps',
       version=version,
-      description="TODO",
+      description="Fast and easy discrete and continuous colormaps.",
       long_description=long_description,
       # Get strings from http://www.python.org/pypi?%3Aaction=list_classifiers
       classifiers=[],
       keywords=[],
-      author='TODO',
-      author_email='TODO@nelen-schuurmans.nl',
+      author='Arjan Verkerk',
+      author_email='arjan.verkerk@nelen-schuurmans.nl',
       url='',
       license='GPL',
       packages=['colormaps'],

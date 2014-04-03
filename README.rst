@@ -1,40 +1,52 @@
 colormaps
-==========================================
+=========
 
 Introduction
+------------
 
-Usage, etc.
+Transform data into rgba data using discrete lookup tables or color
+gradients.
+
+Usage
+-----
+
+Create a discrete colormap with the same two colors::
+    
+    >>> import colormaps
+    >>> colormap = colormaps.DiscreteColormap(
+    ...     values=(0, 1),                      
+    ...     colors=((255, 0, 0, 255),         
+    ...             (0, 0, 255, 127)),        
+    ... )                                     
+
+Create a gradient colormap from red to semi-transparent blue::
+    
+    >>> import colormaps
+    >>> colormap = colormaps.GradientColormap(
+    ...     stops=(0, 1),                      
+    ...     colors=((255, 0, 0, 255),         
+    ...             (0, 0, 255, 127)),        
+    ... )                                     
+
+Calculate the value a some positions::
+
+    >>> colormap([0, 0.5, 1])
+    array([[255,   0,   0, 255],
+           [128,   0, 127, 191],
+    [  0,   0, 255, 127]], dtype=uint8)
 
 
-Post-nensskel setup TODO
-------------------------
+Register the colormap for use in other places::
 
-Here are some instructions on what to do after you've created the project with
-nensskel.
+    >>> colormap.register('my_gradient')
+    >>> colormaps.get('my_gradient')
+    <colormaps.core.GradientColormap object at 0x7f3a52eb8fd0>
+ 
 
-- Fill in a short description on https://github.com/lizardsystem/colormaps or
-  https://github.com/nens/colormaps if you haven't done so already.
+Todo
+----
 
-- Use the same description in the ``setup.py``'s "description" field.
-
-- Fill in your username and email address in the ``setup.py``, see the
-  ``TODO`` fields.
-
-- Check https://github.com/nens/colormaps/settings/collaboration if the team
-  "Nelen & Schuurmans" has access.
-
-- Add a new jenkins job at
-  http://buildbot.lizardsystem.nl/jenkins/view/djangoapps/newJob or
-  http://buildbot.lizardsystem.nl/jenkins/view/libraries/newJob . Job name
-  should be "colormaps", make the project a copy of the existing "lizard-wms"
-  project (for django apps) or "nensskel" (for libraries). On the next page,
-  change the "github project" to ``https://github.com/nens/colormaps/`` and
-  "repository url" fields to ``git@github.com:nens/colormaps.git`` (you might
-  need to replace "nens" with "lizardsystem"). The rest of the settings should
-  be OK.
-
-- The project is prepared to be translated with Lizard's
-  `Transifex <http://translations.lizard.net/>`_ server. For details about
-  pushing translation files to and fetching translation files from the
-  Transifex server, see the ``nens/translations`` `documentation
-  <https://github.com/nens/translations/blob/master/README.rst>`_.
+- Add matplotlib colormaps
+- Add specific nens colormaps
+- Add utils for conversion of hex and float colors
+- Add Docstrings
