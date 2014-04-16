@@ -6,19 +6,24 @@ from __future__ import unicode_literals
 from __future__ import absolute_import
 from __future__ import division
 
+import numpy as np
+
+
 def cdict2kwargs(cdict):
     """
-    Convert cdict and retun a dictionary.
-    
-    Convert the matplotlib cdict to kwargs suitable for the instantiation
-    of a GradientColormap.
-    How:
-    - Make a set of stops from all components
-    - Need the final array as soon asap
-    - 
-    - Duplicate stops if direction matters
-    - Interpolate the missing values.
-    - 
+    Return dictionary suitable to use as kwargs on a GradientColormap.
+
+    Read the floats
+    Determine the stops (it is a set)
+    Determine interpolators for all components
+    That involves duplicating intermediate stops
+    Determine rgba values at missing stops using interpolation
+    Return stops and colors
     """
-    for c in ['red', 'green', 'blue', 'alpha']:
-        cdict.get(c)
+    r = cdict['red']
+    g = cdict['green']
+    b = cdict['blue'],
+    a = cdict.get('alpha', [(0, None, 1), (1, 1, None)])
+
+    result = [r, g, b, a, np]
+    return result
