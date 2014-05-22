@@ -2,8 +2,8 @@ Changelog of colormaps
 ===================================================
 
 
-0.2 (unreleased)
-----------------
+0.1.1 (2014-05-22)
+------------------
 
 - Any gradient stops are now allowed.
 
