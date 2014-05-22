@@ -25,18 +25,25 @@ class BaseColormap(object):
 
 class GradientColormap(BaseColormap):
 
-    def __init__(self, stops, colors, n=256):
+    def __init__(self, stops, colors, n=1024):
+        """
+        - determine scale offset where stops go from 0.5 to n + 0.5
+        """
         self.rgba = np.empty((n, 4), 'u1')
 
-        values = np.arange(n) / (n - 1)
+        a, b = min(stops), max(stops)
+        values = np.arange(n) / (n - 1) * (b - a) + a
         for i, c in enumerate(zip(*colors)):
             self.rgba[:, i] = np.interp(values, stops, c)
+
+        self.limits = a, b
 
     def __call__(self, data):
         d = np.array(data, 'f8')
         n = len(self.rgba)
         e = EPS[d.dtype]
-        rgba = self.rgba[np.uint64(n * (d - e))]
+        a, b = self.limits
+        rgba = self.rgba[np.uint64(n * ((d - (a + e)) / (b - a)))]
         return rgba
 
 

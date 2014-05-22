@@ -36,8 +36,9 @@ def gradient():
     data = np.empty((256, 256))
     data[:] = np.arange(256) / 255
     stops, colors = zip(*[
-        (0.0, (255, 000, 000, 255)),
-        (1.0, (000, 000, 255, 255)),
+        (0.2, (255, 000, 000, 255)),
+        (0.5, (000, 255, 000, 255)),
+        (1.3, (000, 000, 255, 255)),
     ])
     colormap = colormaps.GradientColormap(stops=stops, colors=colors)
     return data, colormap
@@ -48,7 +49,10 @@ class TestColormap(unittest.TestCase):
         data, colormap = gradient()
         rgba = colormap(data)
         rgba
-        self.assertEqual(colormap(0).tolist(), [255, 0, 0, 255])
+        self.assertEqual(colormap(0.2).tolist(), [255, 000, 000, 255])
+        self.assertEqual(colormap(0.5).tolist(), [000, 255, 000, 255])
+        self.assertEqual(colormap(0.9).tolist(), [000, 127, 127, 255])
+        self.assertEqual(colormap(1.3).tolist(), [000, 000, 255, 255])
 
     def test_discrete(self):
         data, colormap = discrete()
