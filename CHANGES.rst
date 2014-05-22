@@ -5,7 +5,7 @@ Changelog of colormaps
 0.1.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Simplify access to registered colormaps
 
 
 0.1.1 (2014-05-22)

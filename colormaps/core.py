@@ -14,13 +14,13 @@ EPS = {
     np.dtype('f8'): np.finfo(np.dtype('f8')).eps,
 }
 
-registered_colormaps = {}
+registered = {}
 
 
 class BaseColormap(object):
     def register(self, name):
         """ Register a colormap for use with get(). """
-        registered_colormaps[name] = self
+        registered[name] = self
 
 
 class GradientColormap(BaseColormap):
@@ -60,4 +60,4 @@ class DiscreteColormap(BaseColormap):
 
 
 def get(name):
-    return registered_colormaps.get(name)
+    return registered.get(name)
