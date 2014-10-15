@@ -25,8 +25,11 @@ Create a gradient colormap from red to semi-transparent blue::
     >>> colormap = colormaps.GradientColormap(
     ...     stops=(0, 1),                      
     ...     colors=((255, 0, 0, 255),         
-    ...             (0, 0, 255, 127)),        
+    ...             (0, 0, 255, 127)),
+    ...     n=2048,
     ... )                                     
+
+Where N is the amount of entries in the prepared look-up table.
 
 Calculate the value a some positions::
 
