@@ -5,7 +5,7 @@ Changelog of colormaps
 0.1.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Load from json, handle masked arrays
 
 
 0.1.2 (2014-05-22)
