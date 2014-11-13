@@ -6,13 +6,12 @@ from __future__ import unicode_literals
 from __future__ import absolute_import
 from __future__ import division
 
+import collections
+import json
 import numpy as np
+import sys
 
-EPS = {
-    np.dtype('f2'): np.finfo(np.dtype('f2')).eps,
-    np.dtype('f4'): np.finfo(np.dtype('f4')).eps,
-    np.dtype('f8'): np.finfo(np.dtype('f8')).eps,
-}
+EPS = np.finfo(np.dtype('f8')).eps
 
 registered = {}
 
@@ -22,12 +21,29 @@ class BaseColormap(object):
         """ Register a colormap for use with get(). """
         registered[name] = self
 
+    def __call__(self, data):
+        """ Return rgba array. """
+        if np.ma.isMaskedArray(data):
+            s = data.shape
+            m = data.mask
+            if m.any():
+                rgba = np.zeros(s + (4,), 'u1')
+                if not m.all():
+                    d = data.compressed().astype(self.dtype)
+                    rgba[~m] = self.convert(d)
+                return rgba
+            # masked array, but nothing masked
+        d = np.array(data, self.dtype)
+        return self.convert(d)
+
 
 class GradientColormap(BaseColormap):
+    dtype = np.dtype('f8')
 
     def __init__(self, stops, colors, n=1024):
         """
-        - determine scale offset where stops go from 0.5 to n + 0.5
+        Determine scale and offset that place the stops at (0.5) and
+        (n + 0.5). Or not? Also create a look-up table for scaled data.
         """
         self.rgba = np.empty((n, 4), 'u1')
 
@@ -38,26 +54,53 @@ class GradientColormap(BaseColormap):
 
         self.limits = a, b
 
-    def __call__(self, data):
-        d = np.array(data, 'f8')
+    def convert(self, data):
+        """
+        Return rgba.
+
+        :param data: A numpy array, not masked.
+        """
         n = len(self.rgba)
-        e = EPS[d.dtype]
         a, b = self.limits
-        rgba = self.rgba[np.uint64(n * ((d - (a + e)) / (b - a)))]
-        return rgba
+        return self.rgba[np.uint64(n * ((data - (a + EPS)) / (b - a)))]
 
 
 class DiscreteColormap(BaseColormap):
+    dtype = np.dtype('u8')
 
     def __init__(self, values, colors):
         self.rgba = np.zeros((max(values) + 1, 4), dtype='u1')
         self.rgba[np.array(values)] = colors
 
-    def __call__(self, data):
-        d = np.array(data, 'i8')
-        rgba = self.rgba[d]
-        return rgba
+    def convert(self, data):
+        """"
+        Return rgba.
+
+        :param data: A numpy array, not masked.
+        """
+        return self.rgba[data]
+
+
+def normalize(data, vmin=None, vmax=None):
+    if not np.ma.isMaskedArray(data):
+        data = np.array(data)
+    dmin = data.min() if vmin is None else vmin
+    dmax = data.max() if vmax is None else vmax
+    return (data - dmin) / (dmax - dmin)
 
 
 def get(name):
-    return registered.get(name)
+    try:
+        return registered[name]
+    except KeyError:
+        raise NameError("'{}' is not in registered colormaps".format(name))
+
+
+def load(path):
+    with open(path) as f:
+        d = json.load(f)
+        args = collections.defaultdict(list, **d['args'])
+        for c in d['components']:
+            for k, v in c.items():
+                args['{}s'.format(k)].append(v)
+        return getattr(sys.modules[__name__], d['type'])(**args)

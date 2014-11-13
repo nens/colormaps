@@ -49,19 +49,39 @@ class TestColormap(unittest.TestCase):
         data, colormap = gradient()
         rgba = colormap(data)
         rgba
+        # scalars
         self.assertEqual(colormap(0.2).tolist(), [255, 000, 000, 255])
         self.assertEqual(colormap(0.5).tolist(), [000, 255, 000, 255])
         self.assertEqual(colormap(0.9).tolist(), [000, 127, 127, 255])
         self.assertEqual(colormap(1.3).tolist(), [000, 000, 255, 255])
+        # masked arrays
+        masked = np.ma.masked
+        self.assertEqual(colormap(masked).tolist(), [0, 0, 0, 0])
+        partial = np.ma.masked_equal([0.5, 1], 1)
+        self.assertEqual(colormap(partial).tolist(), [[000, 255, 000, 255],
+                                                      [000, 000, 000, 000]])
+        unmasked = np.ma.array([0.5, 0.5])
+        self.assertEqual(colormap(unmasked).tolist(), [[000, 255, 000, 255],
+                                                       [000, 255, 000, 255]])
 
     def test_discrete(self):
         data, colormap = discrete()
         rgba = colormap(data)
         rgba
         self.assertEqual(colormap(0).tolist(), [255, 0, 0, 255])
+        self.assertEqual(colormap(np.ma.masked).tolist(), [0, 0, 0, 0])
 
     def test_register(self):
         name = 'test'
         data, colormap = discrete()
         colormap.register(name)
         self.assertEqual(colormap, colormaps.get(name))
+
+    def test_not_registered(self):
+        self.assertRaises(NameError, colormaps.get, 'nonsense')
+
+    def test_normalize(self):
+        self.assertEqual(
+            colormaps.normalize([2, 6], vmax=10).tolist(),
+            [0, 0.5],
+        )
