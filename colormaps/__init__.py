@@ -11,7 +11,7 @@ from colormaps.core import DiscreteColormap
 
 from colormaps.core import get
 from colormaps.core import load
-from colormaps.core import normalize
+from colormaps.core import loads
 from colormaps.core import registered
 
 GradientColormap
@@ -19,5 +19,6 @@ DiscreteColormap
 
 get
 load
+loads
 normalize
 registered
