@@ -39,6 +39,7 @@ class BaseColormap(object):
 
 class GradientColormap(BaseColormap):
     dtype = np.dtype('f8')
+    normalize = True
 
     def __init__(self, stops, colors, n=1024):
         """
@@ -62,11 +63,13 @@ class GradientColormap(BaseColormap):
         """
         n = len(self.rgba)
         a, b = self.limits
+        data.clip(a, b)
         return self.rgba[np.uint64(n * ((data - (a + EPS)) / (b - a)))]
 
 
 class DiscreteColormap(BaseColormap):
     dtype = np.dtype('u8')
+    normalize = False
 
     def __init__(self, values, colors):
         self.rgba = np.zeros((max(values) + 1, 4), dtype='u1')
