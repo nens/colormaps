@@ -12,76 +12,66 @@ import numpy as np
 
 import colormaps
 
+MASKED = [0, 0, 255, 255]
+INVALID = [0, 255, 0, 255]
+
 
 def discrete():
-    data = np.empty((256, 256), 'u1')
-    for i in range(8):
-        data[32 * i:32 * (i + 1)] = i
-
-    values, colors = zip(*[
-        (0, (255, 000, 000, 255)),
-        (1, (255, 255, 000, 255)),
-        (2, (000, 255, 000, 255)),
-        (3, (000, 255, 255, 255)),
-        (4, (000, 000, 255, 255)),
-        (5, (255, 000, 000, 127)),
-        (6, (000, 255, 000, 127)),
-        (7, (000, 000, 255, 127)),
-    ])
-    colormap = colormaps.DiscreteColormap(values=values, colors=colors)
-    return data, colormap
+    colormap = {
+        'type': 'DiscreteColormap',
+        'masked': MASKED,
+        'invalid': INVALID,
+        'items': [
+            {'value': 0, 'color': (127, 000, 000, 255)},
+            {'value': 2, 'color': (255, 000, 000, 255)},
+        ],
+    }
+    return colormaps.create(colormap)
 
 
-def gradient():
-    data = np.empty((256, 256))
-    data[:] = np.arange(256) / 255
-    stops, colors = zip(*[
-        (0.2, (255, 000, 000, 255)),
-        (0.5, (000, 255, 000, 255)),
-        (1.3, (000, 000, 255, 255)),
-    ])
-    colormap = colormaps.GradientColormap(stops=stops, colors=colors)
-    return data, colormap
+def gradient(log=False, size=3, interp=None):
+    colormap = {
+        'type': 'GradientColormap',
+        'masked': MASKED,
+        'items': [
+            {'value': 3, 'color': (127, 000, 000, 255)},
+            {'value': 5, 'color': (255, 000, 000, 255)},
+        ],
+    }
+    return colormaps.create(colormap)
 
 
 class TestColormap(unittest.TestCase):
     def test_gradient(self):
-        data, colormap = gradient()
-        rgba = colormap(data)
-        rgba
+        colormap = gradient()
+
         # scalars
-        self.assertEqual(colormap(0.2).tolist(), [255, 000, 000, 255])
-        self.assertEqual(colormap(0.5).tolist(), [000, 255, 000, 255])
-        self.assertEqual(colormap(0.9).tolist(), [000, 127, 127, 255])
-        self.assertEqual(colormap(1.3).tolist(), [000, 000, 255, 255])
-        # masked arrays
-        masked = np.ma.masked
-        self.assertEqual(colormap(masked).tolist(), [0, 0, 0, 0])
-        partial = np.ma.masked_equal([0.5, 1], 1)
-        self.assertEqual(colormap(partial).tolist(), [[000, 255, 000, 255],
-                                                      [000, 000, 000, 000]])
-        unmasked = np.ma.array([0.5, 0.5])
-        self.assertEqual(colormap(unmasked).tolist(), [[000, 255, 000, 255],
-                                                       [000, 255, 000, 255]])
+        self.assertEqual(colormap(np.ma.masked).tolist(), MASKED)
+        self.assertEqual(colormap(5).tolist(), INVALID)
+        self.assertEqual(colormap(2).tolist(), [255, 000, 000, 255])
+        
+        # array
 
     def test_discrete(self):
-        data, colormap = discrete()
-        rgba = colormap(data)
-        rgba
-        self.assertEqual(colormap(0).tolist(), [255, 0, 0, 255])
-        self.assertEqual(colormap(np.ma.masked).tolist(), [0, 0, 0, 0])
+        colormap = discrete()
+        # scalar
+        self.assertEqual(colormap(np.ma.masked).tolist(), MASKED)
+        self.assertEqual(colormap(5).tolist(), INVALID)
+        self.assertEqual(colormap(2).tolist(), [255, 000, 000, 255])
+        # array
+        self.assertEqual(
+            colormap(np.ma.masked_equal([0, 1, 2, 3], 1)).tolist(),
+            [[127, 000, 000, 255],
+            MASKED,
+            [ 255, 000, 000, 255],
+            INVALID],
+        )
 
     def test_register(self):
         name = 'test'
-        data, colormap = discrete()
+        colormap = discrete()
         colormap.register(name)
         self.assertEqual(colormap, colormaps.get(name))
 
     def test_not_registered(self):
         self.assertRaises(NameError, colormaps.get, 'nonsense')
-
-    def test_normalize(self):
-        self.assertEqual(
-            colormaps.normalize([2, 6], vmax=10).tolist(),
-            [0, 0.5],
-        )
