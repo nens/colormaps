@@ -29,7 +29,7 @@ def discrete():
     return colormaps.create(colormap)
 
 
-def gradient(log=False, size=3, interp=None):
+def gradient(size=3, log=False, free=True, interp=None):
     colormap = {
         'type': 'GradientColormap',
         'masked': MASKED,
@@ -37,11 +37,49 @@ def gradient(log=False, size=3, interp=None):
             {'value': 3, 'color': (127, 000, 000, 255)},
             {'value': 5, 'color': (255, 000, 000, 255)},
         ],
+        'log': log,
+        'free': free,
+        'interp': interp,
     }
     return colormaps.create(colormap)
 
 
 class TestColormap(unittest.TestCase):
+    def test_gradient_repr(self):
+        colormap = gradient()
+        self.assertTrue(repr(colormap))
+    
+    def test_gradient_clip(self):
+        colormap = gradient()
+        self.assertEqual(
+            colormap(7, limits=(7, 9)).tolist(),
+            [127, 000, 000, 255],
+        )
+    
+    def test_gradient_non_free(self):
+        colormap = gradient(free=False)
+        self.assertEqual(
+            colormap(7).tolist(),
+            [255, 000, 000, 255],
+        )
+
+    def test_gradient_interp(self):
+        colormap = gradient(log=True, interp=[
+            {'source': 3, 'target': 0},
+            {'source': 5, 'target': 1},
+        ])
+        self.assertEqual(
+            colormap(7).tolist(),
+            [255, 000, 000, 255],
+        )
+
+    def test_gradient_log(self):
+        colormap = gradient(log=True)
+        self.assertEqual(
+            colormap(7, limits=(7, 9)).tolist(),
+            [127, 000, 000, 255],
+        )
+
     def test_gradient(self):
         colormap = gradient()
         # scalars
@@ -57,6 +95,17 @@ class TestColormap(unittest.TestCase):
              [255, 000, 000, 255]]
         )
 
+    def test_discrete_repr(self):
+        colormap = discrete()
+        self.assertTrue(repr(colormap))
+    
+    def test_discrete_clip(self):
+        colormap = discrete()
+        self.assertEqual(
+            colormap(0, limits=(1, 2)).tolist(),
+            INVALID,
+        )
+    
     def test_discrete(self):
         colormap = discrete()
         # scalar

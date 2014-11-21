@@ -43,25 +43,27 @@ class Data(object):
         """ Transform to log domain. """
         return self.do(lambda x: np.log(x * (np.e - 1) + 1))
 
-    def interp(self, x, y):
+    def interp(self, interp):
         """ Interpolate. """
-        return self.do(lambda z: np.interp(z, x, y))
+        return self.do(lambda x: np.interp(x, *interp))
 
     def scale(self, limits):
         """ Linear normalize, using limits or data limits. """
         if limits is None:
             # use own limits
             data = self
+            factor = data.limits[1] - data.limits[0]
+            if factor == 0:
+                # single value, return 0.5
+                return self.do(lambda x: 0.5 * np.ones(x.shape, x.dtype))
+            offset = data.limits[0]
         else:
             # clip to given limits
             data = self.clip(limits)
-        factor = data.limits[1] - data.limits[0]
-        if factor == 0:
-            # single value, return 0.5
-            return self.do(lambda x: 0.5 * np.ones(x.shape, x.dtype))
+            factor = limits[1] - limits[0]
+            offset = limits[0]
 
         # scale
-        offset = data.limits[0]
         return data.do(lambda x: (x - offset) / factor)
 
 
