@@ -24,34 +24,44 @@ class Data(object):
     """
     def __init__(self, data=None, limits=None, array=None):
         """ Either supply data, or array and limits. """
-        if data:
+        if data is None:
+            self.array, self.limits = array, limits
+        else:
             self.array = np.array(data)
             self.limits = np.array([self.array.min(), self.array.max()])
-        else:
-            self.array, self.limits = array, limits
 
     def do(self, function):
         """ Apply func to both array and limits. """
         return self.__class__(array=function(self.array),
                               limits=function(self.limits))
 
-    def clip(self, domain):
+    def clip(self, limits):
         """ Clip between vmin and vmax. """
-        return self.do(lambda x: x.clip(*domain))
+        return self.do(lambda x: x.clip(*limits))
 
     def log(self):
         """ Transform to log domain. """
         return self.do(lambda x: np.log(x * (np.e - 1) + 1))
-    
+
     def interp(self, x, y):
         """ Interpolate. """
         return self.do(lambda z: np.interp(z, x, y))
 
     def scale(self, limits):
-        """ Linear normalize, using domain or self.limits. """
-        data = self.clip(limits)
-        factor = limits[1] - limits[0]
-        offset = limits[0]
+        """ Linear normalize, using limits or data limits. """
+        if limits is None:
+            # use own limits
+            data = self
+        else:
+            # clip to given limits
+            data = self.clip(limits)
+        factor = data.limits[1] - data.limits[0]
+        if factor == 0:
+            # single value, return 0.5
+            return self.do(lambda x: 0.5 * np.ones(x.shape, x.dtype))
+
+        # scale
+        offset = data.limits[0]
         return data.do(lambda x: (x - offset) / factor)
 
 
@@ -62,17 +72,33 @@ class BaseColormap(object):
         registered[name] = self
 
     def __len__(self):
-        return len(self.rgba)
+        """
+        Return the official length of the rgba array.
+
+        The actual rgba is one element bigger, for different reasons. The
+        DiscreteColormap uses it for storing the invalid color. The
+        GradientColormap uses it so that the highest value, that is 1.0
+        after scaling, does not fall out of the rgba array when looking
+        up by index.
+        """
+        return len(self.rgba) - 1
 
     def __call__(self, data, limits=None):
-        """ Return rgba array, handle masked arrays. """
-        a = np.ma.array(data)
-        m = a.mask
-        if not m.any():
-            return self.convert(a.data, limits)
-        rgba = self.masked * np.ones(a.shape + (4,), 'u1')
-        if not m.all():
-            rgba[~m] = self.convert(a.compressed(), limits)
+        """
+        Return rgba array, handle masked values.
+
+        :param data: the data to colormap
+        :param limits: m, n tuple having m <= n.
+
+        The effect of the limits parameter dependes on the colormap type
+        """
+        array = np.ma.array(data)
+        mask = array.mask
+        if not mask.any():
+            return self.convert(array.data, limits)
+        rgba = self.masked * np.ones(array.shape + (4,), 'u1')
+        if not mask.all():
+            rgba[~mask] = self.convert(array.compressed(), limits)
         return rgba
 
 
@@ -101,9 +127,17 @@ class DiscreteColormap(BaseColormap):
         Return rgba.
 
         :param data: A numpy array, not masked.
+        :param limits: m, n tuple having m <= n.
+
+        Values outside the limits will be colored with the invalid color,
+        even if a value was given during the colormap initialization.
         """
+        if limits is None:
+            limits = self.limits
+        else:
+            limits = np.array(limits).clip(self.limits)
         index = np.ma.masked_outside(
-            np.uint64(data), self.limits[0], self.limits[1],
+            np.uint64(data), limits[0], limits[1],
         ).filled(self.limits[1] + 1)
         return self.rgba[index]
 
@@ -125,15 +159,14 @@ class GradientColormap(BaseColormap):
         """
         Return processed data.
 
-        Process data according to colormap properties and domain request.
+        If limits are not given, data is scaled according to the colormaps
+        interpolation, if any, or else to the input limits.
         """
         data = Data(data)
         if limits is None:
             if self.interp is not None:
                 # use linear interpolation into the (0, 1) range
                 return data.interp(self.interp)
-            if self.limits is not None:
-                limits = self.limits
         if self.log:
             # use linear scaling into the (0, 1) range followed by log rescale
             return data.scale(limits).log()
@@ -141,9 +174,17 @@ class GradientColormap(BaseColormap):
         return data.scale(limits)
 
     def __init__(self, values, colors,
-                 size=256, log=False, interp=None, masked=None):
+                 size=256, log=False, free=True, interp=None, masked=None):
         """
         Build the look-up table.
+
+        :param values: list of N floats
+        :param colors: list of N rgba tuples
+        :param size: size of the generated look-up table
+        :param log: use a log scale whenever appropriate
+        :param free: use data limits instead of colormap limits
+        :param interp: {'sources': sources, 'targets': targets}
+        :param masked: rgba tuple to use as masked color
         """
         if interp:
             self.interp = (np.array(interp['sources']),
@@ -151,6 +192,7 @@ class GradientColormap(BaseColormap):
         else:
             self.interp = None
         self.log = log
+        self.free = free
         self.masked = masked
         self.limits = min(values), max(values)
 
@@ -158,20 +200,31 @@ class GradientColormap(BaseColormap):
         values = np.arange(size) / (size - 1)
 
         # build the color table
-        self.rgba = np.empty((size, 4), 'u1')
+        self.rgba = np.empty((size + 1, 4), 'u1')
         for i, c in enumerate(zip(*colors)):
-            self.rgba[:, i] = np.interp(values, stops, c)
+            self.rgba[: -1, i] = np.interp(values, stops, c)
+        self.rgba[-1, :] = self.rgba[-2, :]
 
     def convert(self, data, limits):
         """
         Return rgba.
 
         :param data: A numpy array, not masked.
+        :param limits: m, n tuple having m <= n.
+
+        If limits are given, input is scaled such that values between
+        limits span the colormap. Values outside are colored according
+        to the first and last entries in the colormap.
+
+        If limits are not given, limits are taken from input if the
+        colormap is 'free' or else from the colormap initialization
+        values.
         """
+        if limits is None and not self.free:
+            limits = self.limits
+
         data = self.process(data=data, limits=limits)
-        (a, b) = self.limits if limits is None else data.limits
-        n = len(self)
-        return self.rgba[np.uint64(n * ((data.array - (a + EPS)) / (b - a)))]
+        return self.rgba[np.uint64(len(self) * data.array)]
 
 
 def get(name):
