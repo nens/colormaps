@@ -21,9 +21,9 @@ def discrete():
         'type': 'DiscreteColormap',
         'masked': MASKED,
         'invalid': INVALID,
-        'items': [
-            {'value': 0, 'color': (127, 000, 000, 255)},
-            {'value': 2, 'color': (255, 000, 000, 255)},
+        'data': [
+            (0, (127, 000, 000, 255)),
+            (2, (255, 000, 000, 255)),
         ],
     }
     return colormaps.create(colormap)
@@ -32,14 +32,15 @@ def discrete():
 def gradient(size=3, log=False, free=True, interp=None):
     colormap = {
         'type': 'GradientColormap',
-        'masked': MASKED,
-        'items': [
-            {'value': 3, 'color': (127, 000, 000, 255)},
-            {'value': 5, 'color': (255, 000, 000, 255)},
-        ],
-        'log': log,
+        'size': size,
         'free': free,
+        'log': log,
         'interp': interp,
+        'masked': MASKED,
+        'data': [
+            (3, (127, 000, 000, 255)),
+            (5, (255, 000, 000, 255)),
+        ],
     }
     return colormaps.create(colormap)
 
@@ -48,14 +49,18 @@ class TestColormap(unittest.TestCase):
     def test_gradient_repr(self):
         colormap = gradient()
         self.assertTrue(repr(colormap))
-    
+
+    def test_gradient_size(self):
+        colormap = gradient(size=5)
+        self.assertEqual(len(colormap), 5)
+
     def test_gradient_clip(self):
         colormap = gradient()
         self.assertEqual(
             colormap(7, limits=(7, 9)).tolist(),
             [127, 000, 000, 255],
         )
-    
+
     def test_gradient_non_free(self):
         colormap = gradient(free=False)
         self.assertEqual(
@@ -64,10 +69,7 @@ class TestColormap(unittest.TestCase):
         )
 
     def test_gradient_interp(self):
-        colormap = gradient(log=True, interp=[
-            {'source': 3, 'target': 0},
-            {'source': 5, 'target': 1},
-        ])
+        colormap = gradient(log=True, interp=[(3, 0), (5, 1)])
         self.assertEqual(
             colormap(7).tolist(),
             [255, 000, 000, 255],
@@ -98,14 +100,14 @@ class TestColormap(unittest.TestCase):
     def test_discrete_repr(self):
         colormap = discrete()
         self.assertTrue(repr(colormap))
-    
+
     def test_discrete_clip(self):
         colormap = discrete()
         self.assertEqual(
             colormap(0, limits=(1, 2)).tolist(),
             INVALID,
         )
-    
+
     def test_discrete(self):
         colormap = discrete()
         # scalar

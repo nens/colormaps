@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.rst.
 
@@ -165,43 +164,42 @@ class GradientColormap(BaseColormap):
         If limits are not given, data is scaled according to the colormaps
         interpolation, if any, or else to the input limits.
         """
-        data = Data(data)
-        if limits is None:
-            if self.interp is not None:
-                # use linear interpolation into the (0, 1) range
-                return data.interp(self.interp)
+        data = Data(data=data).scale(limits=limits)
         if self.log:
-            # use linear scaling into the (0, 1) range followed by log rescale
-            return data.scale(limits).log()
-        # use linear scaling into the (0, 1) range
-        return data.scale(limits)
+            data = data.log()
+        if self.interp:
+            data = data.interp(self.interp)
+        return data.array
 
-    # def __init__(self, values, colors,
-    #              size=256, free=True, scale=None, masked=INVALID):
     def __init__(self, values, colors,
-                 size=256, log=False, free=True, interp=None, masked=INVALID):
+                 size=256, free=True, log=False, interp=None, masked=INVALID):
         """
         Build the look-up table.
 
         :param values: list of N floats
         :param colors: list of N rgba tuples
         :param size: size of the generated look-up table
-        :param log: use a log scale whenever appropriate
         :param free: use data limits instead of colormap limits
-        :param interp: {'sources': sources, 'targets': targets}
+        :param log: use a log scale whenever appropriate
+        :param interp: [(x1, y1), (x2, y2), ...]
         :param masked: rgba tuple to use as masked color
         """
-        if interp:
-            self.interp = (np.array(interp['sources']),
-                           np.array(interp['targets']))
-        else:
-            self.interp = None
         self.log = log
         self.free = free
         self.masked = masked
         self.limits = min(values), max(values)
+        self.interp = self.limits, self.limits  # dummy
 
-        stops = self.process(data=values).array
+        # store interpolation inputs scaled
+        if interp:
+            # prescale interp iputs scale the inputs already
+            process = lambda x: (self.process(data=x[0]), np.array(x[1]))
+            self.interp = process(zip(*interp))
+        else:
+            self.interp = None
+
+        # now the color entries
+        stops = self.process(data=values)
         values = np.arange(size) / (size - 1)
 
         # build the color table
@@ -229,7 +227,7 @@ class GradientColormap(BaseColormap):
             limits = self.limits
 
         data = self.process(data=data, limits=limits)
-        return self.rgba[np.uint64(len(self) * data.array)]
+        return self.rgba[np.uint64(len(self) * data)]
 
 
 def get(name):
@@ -242,19 +240,6 @@ def get(name):
 def create(colormap):
     """ Create a colormap from a dictionary. """
     kwargs = colormap.copy()
-
-    # rearrange the items
-    kwargs.update(values=[], colors=[])
-    for element in kwargs.pop('items'):
-        for k, v in element.items():
-            kwargs['{}s'.format(k)].append(v)
-
-    # rearrange interp
-    interp = kwargs.pop('interp', None)
-    if interp:
-        kwargs['interp'] = {'sources': [], 'targets': []}
-        for element in interp:
-            for k, v in element.items():
-                kwargs['interp']['{}s'.format(k)].append(v)
-
+    values, colors = zip(*kwargs.pop('data'))
+    kwargs.update(values=values, colors=colors)
     return getattr(sys.modules[__name__], kwargs.pop('type'))(**kwargs)

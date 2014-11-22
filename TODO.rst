@@ -5,23 +5,27 @@ json init in the raster-server
 ------------------------------
 
 In the colormap json, this translates to:
-    class: discrete
-    items: [{value: 0, color: [0, 0, 0, 0]}]
-    size: 1024
-    log: true
-    interp: 'ahn2'
+    class: discrete,
+    interp: 'ahn2',
+    size: 1024,
+    log: true,
+    data [
+        (0, (0, 0, 0, 0)),
+        ...
+    ]
 and the converter json:
-    [{value: 0, color: [0, 0, 0, 0]}]
+[
+    (0, 0),
+    (2, 1)
+]
 
 Roadmap
 -------
-We must rewrite again. scale is either linear, log or
-interpolation. Interpolation may be given from an arbitrary domain,
-but it is rescaled to the 0, 1 domain. When the colormap designer makes
-sure the entered values correspond to the original interpolation domain
-AND make the colormap non-free, it will result in the desired behaviour.
+So, now log and interpolation will both be applied when present. Not
+sure why anyone would want that, though.
 
-What about a legend? - no problem, that will always just call the
-colormap with the same arguments as the map does, so that the result
-will be the same. This does not hold for calls without limits to free
-colormaps of course.
+- Test with real colors
+- Finish the cdic converter
+- Investigate behavior of the log and interpolation things.
+- Make workable jsons
+- Make workable interps in a folder
