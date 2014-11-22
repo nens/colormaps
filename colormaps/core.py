@@ -10,7 +10,8 @@ from __future__ import division
 import numpy as np
 import sys
 
-EPS = np.finfo(np.dtype('f8')).eps
+MASKED = 0, 0, 0, 0
+INVALID = 0, 0, 0, 0
 
 registered = {}
 
@@ -115,7 +116,7 @@ class DiscreteColormap(BaseColormap):
                                upper=self.limits[1],
                                name=self.__class__.__name__)
 
-    def __init__(self, values, colors, masked=None, invalid=None):
+    def __init__(self, values, colors, masked=MASKED, invalid=INVALID):
         """
         Build the look-up table.
         """
@@ -175,8 +176,10 @@ class GradientColormap(BaseColormap):
         # use linear scaling into the (0, 1) range
         return data.scale(limits)
 
+    # def __init__(self, values, colors,
+    #              size=256, free=True, scale=None, masked=INVALID):
     def __init__(self, values, colors,
-                 size=256, log=False, free=True, interp=None, masked=None):
+                 size=256, log=False, free=True, interp=None, masked=INVALID):
         """
         Build the look-up table.
 
