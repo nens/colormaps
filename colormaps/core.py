@@ -122,7 +122,7 @@ class DiscreteColormap(BaseColormap):
         self.limits = min(values), max(values)
         self.rgba = invalid * np.ones((self.limits[1] + 2, 4), dtype='u1')
         self.rgba[np.array(values)] = colors
-        self.masked = masked
+        self.masked = np.array(masked, 'u1')
 
     def convert(self, data, limits):
         """"
@@ -186,7 +186,7 @@ class GradientColormap(BaseColormap):
         """
         self.log = log
         self.free = free
-        self.masked = masked
+        self.masked = np.array(masked, 'u1')
         self.limits = min(values), max(values)
         self.interp = self.limits, self.limits  # dummy
 
