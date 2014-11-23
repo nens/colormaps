@@ -62,7 +62,6 @@ class TestColormap(unittest.TestCase):
         )
 
     def test_gradient_interp(self):
-        interp = [(3, 0), (5, 1)]
         colormap = gradient(log=True, interp=[(3, 0), (5, 1)])
         self.assertEqual(
             colormap(7).tolist(),
