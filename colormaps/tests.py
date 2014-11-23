@@ -61,15 +61,23 @@ class TestColormap(unittest.TestCase):
             [127, 000, 000, 255],
         )
 
-    def test_gradient_non_free(self):
-        colormap = gradient(free=False)
+    def test_gradient_interp(self):
+        interp = [(3, 0), (5, 1)]
+        colormap = gradient(log=True, interp=[(3, 0), (5, 1)])
         self.assertEqual(
             colormap(7).tolist(),
             [255, 000, 000, 255],
         )
 
-    def test_gradient_interp(self):
-        colormap = gradient(log=True, interp=[(3, 0), (5, 1)])
+    def test_gradient_interp_and_clip(self):
+        colormap = gradient(interp=[(3, 0), (5, 1)])
+        self.assertEqual(
+            colormap(7, limits=(4, 6)).tolist(),
+            [255, 000, 000, 255],
+        )
+
+    def test_gradient_non_free(self):
+        colormap = gradient(free=False)
         self.assertEqual(
             colormap(7).tolist(),
             [255, 000, 000, 255],

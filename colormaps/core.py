@@ -22,49 +22,43 @@ class Data(object):
     scale() will typically be called with the colormaps' limits as the
     clip limits.
     """
-    def __init__(self, data=None, limits=None, array=None):
-        """ Either supply data, or array and limits. """
-        if data is None:
-            self.array, self.limits = array, limits
+    def __init__(self, data, limits=None):
+        """
+        If limits, clip data right from start.
+
+        :param data: a numpy data
+        :param limits: min, max tuple
+        """
+        if limits is None:
+            self.data = np.array(data)
+            self.limits = np.array([self.data.min(), self.data.max()])
         else:
-            self.array = np.array(data)
-            self.limits = np.array([self.array.min(), self.array.max()])
+            self.limits = np.array(limits)
+            self.data = np.array(data).clip(*self.limits)
 
     def do(self, function):
         """ Apply func to both array and limits. """
-        return self.__class__(array=function(self.array),
+        return self.__class__(data=function(self.data),
                               limits=function(self.limits))
 
-    def clip(self, limits):
-        """ Clip between vmin and vmax. """
-        return self.do(lambda x: x.clip(*limits))
-
     def log(self):
-        """ Transform to log domain. """
-        return self.do(lambda x: np.log(x * (np.e - 1) + 1))
+        """ Transiform to log domain. """
+        return self.do(lambda x: np.log(x))
 
     def interp(self, interp):
         """ Interpolate. """
         return self.do(lambda x: np.interp(x, *interp))
 
-    def scale(self, limits):
-        """ Linear normalize, using limits or data limits. """
-        if limits is None:
-            # use own limits
-            data = self
-            factor = data.limits[1] - data.limits[0]
-            if factor == 0:
-                # single value, return 0.5
-                return self.do(lambda x: 0.5 * np.ones(x.shape, x.dtype))
-            offset = data.limits[0]
-        else:
-            # clip to given limits
-            data = self.clip(limits)
-            factor = limits[1] - limits[0]
-            offset = limits[0]
+    def scale(self):
+        """ Scale limits and data to span (0, 1). """
+        factor = self.limits[1] - self.limits[0]
+        if factor == 0:
+            # single value, return 0.5
+            return self.do(lambda x: 0.5 * np.ones(x.shape, x.dtype))
+        offset = self.limits[0]
 
         # scale
-        return data.do(lambda x: (x - offset) / factor)
+        return self.do(lambda x: (x - offset) / factor)
 
 
 class BaseColormap(object):
@@ -164,12 +158,16 @@ class GradientColormap(BaseColormap):
         If limits are not given, data is scaled according to the colormaps
         interpolation, if any, or else to the input limits.
         """
-        data = Data(data=data).scale(limits=limits)
+        data = Data(data=data, limits=limits)
         if self.log:
             data = data.log()
         if self.interp:
             data = data.interp(self.interp)
-        return data.array
+            if limits:
+                data = data.scale()
+        else:
+            data = data.scale()
+        return data.data
 
     def __init__(self, values, colors,
                  size=256, free=True, log=False, interp=None, masked=INVALID):
@@ -188,13 +186,12 @@ class GradientColormap(BaseColormap):
         self.free = free
         self.masked = np.array(masked, 'u1')
         self.limits = min(values), max(values)
-        self.interp = self.limits, self.limits  # dummy
 
         # store interpolation inputs scaled
         if interp:
-            # prescale interp iputs scale the inputs already
-            process = lambda x: (self.process(data=x[0]), np.array(x[1]))
-            self.interp = process(zip(*interp))
+            self.interp = map(np.array, zip(*interp))
+            if log:
+                np.log(self.interp[0], self.interp[0])
         else:
             self.interp = None
 

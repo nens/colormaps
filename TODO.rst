@@ -21,8 +21,17 @@ and the converter json:
 
 Roadmap
 -------
-So, now log and interpolation will both be applied when present. Not
-sure why anyone would want that, though.
+Again, things must change. The log scaling must not do the * (e - 1) + 1.
+The interpolation must always function, but when used with limits, it
+must clip => interpolate => stretch. In this way the statistics of the data
+are respected, but scaling stays possible.
+
+Using only scale:
+    scale to have limits at 0,1 (start with clip if limits)
+    log and scale to have limits at 0,1 (start with clip if limits)
+Using interp:
+    interp to have limits at 0,1 (add pre-clip and after-scale if limits)
+    log and interp to have limits at 0,1 (add pre-clip and after-scale if limits)
 
 - Test with real colors
 - Finish the cdic converter
