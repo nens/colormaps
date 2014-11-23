@@ -128,10 +128,13 @@ class DiscreteColormap(BaseColormap):
         Values outside the limits will be colored with the invalid color,
         even if a value was given during the colormap initialization.
         """
+        # tighten limits to colormap
         if limits is None:
             limits = self.limits
         else:
             limits = np.array(limits).clip(self.limits)
+        
+        # mask data outside limits
         index = np.ma.masked_outside(
             np.uint64(data), limits[0], limits[1],
         ).filled(self.limits[1] + 1)
