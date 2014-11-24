@@ -11,6 +11,7 @@ import unittest
 import numpy as np
 
 import colormaps
+from colormaps import core
 
 MASKED = [0, 0, 255, 255]
 INVALID = [0, 255, 0, 255]
@@ -129,6 +130,10 @@ class TestColormap(unittest.TestCase):
              [255, 000, 000, 255],
              INVALID],
         )
+
+    def test_data_repr(self):
+        data = core.Data(data=(2, 3), limits=(1, 4))
+        self.assertEqual(repr(data), '<Data: data 2,3; limits 1,4>')
 
     def test_register(self):
         name = 'test'

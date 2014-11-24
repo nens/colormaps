@@ -22,6 +22,14 @@ class Data(object):
     scale() will typically be called with the colormaps' limits as the
     clip limits.
     """
+    def __repr__(self):
+        template = '<{name}: data {dmin},{dmax}; limits {lmin},{lmax}>'
+        return template.format(lmin=self.limits[0],
+                               lmax=self.limits[1],
+                               dmin=self.data.min(),
+                               dmax=self.data.max(),
+                               name=self.__class__.__name__)
+
     def __init__(self, data, limits=None):
         """
         If limits, clip data right from start.
@@ -133,7 +141,7 @@ class DiscreteColormap(BaseColormap):
             limits = self.limits
         else:
             limits = np.array(limits).clip(self.limits)
-        
+
         # mask data outside limits
         index = np.ma.masked_outside(
             np.uint64(data), limits[0], limits[1],
@@ -146,7 +154,7 @@ class GradientColormap(BaseColormap):
 
     def __repr__(self):
         template = ('<{name}: size {size}, '
-                    'limits {lower}-{upper}, log {log}, interp {interp}>')
+                    'limits {lower} - {upper}, log {log}, interp {interp}>')
         return template.format(log=self.log,
                                size=len(self),
                                lower=self.limits[0],
