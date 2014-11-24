@@ -122,9 +122,10 @@ class DiscreteColormap(BaseColormap):
         Build the look-up table.
         """
         self.limits = min(values), max(values)
-        self.rgba = invalid * np.ones((self.limits[1] + 2, 4), dtype='u1')
-        self.rgba[np.array(values)] = colors
         self.masked = np.array(masked, 'u1')
+        self.invalid = np.array(invalid, 'u1')
+        self.rgba = self.invalid * np.ones((self.limits[1] + 2, 4), dtype='u1')
+        self.rgba[np.array(values)] = colors
 
     def convert(self, data, limits):
         """"
@@ -140,7 +141,7 @@ class DiscreteColormap(BaseColormap):
         if limits is None:
             limits = self.limits
         else:
-            limits = np.array(limits).clip(self.limits)
+            limits = np.array(limits).clip(*self.limits)
 
         # mask data outside limits
         index = np.ma.masked_outside(
@@ -181,7 +182,7 @@ class GradientColormap(BaseColormap):
         return data.data
 
     def __init__(self, values, colors,
-                 size=256, free=True, log=False, interp=None, masked=INVALID):
+                 size=256, free=True, log=False, interp=None, masked=MASKED):
         """
         Build the look-up table.
 
