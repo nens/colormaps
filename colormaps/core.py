@@ -117,10 +117,12 @@ class DiscreteColormap(BaseColormap):
                                upper=self.limits[1],
                                name=self.__class__.__name__)
 
-    def __init__(self, values, colors, masked=MASKED, invalid=INVALID):
+    def __init__(self, data, masked=MASKED, invalid=INVALID):
         """
         Build the look-up table.
         """
+        values, colors = zip(*data)
+
         self.limits = min(values), max(values)
         self.masked = np.array(masked, 'u1')
         self.invalid = np.array(invalid, 'u1')
@@ -181,7 +183,7 @@ class GradientColormap(BaseColormap):
             data = data.scale()
         return data.data
 
-    def __init__(self, values, colors,
+    def __init__(self, data,
                  size=256, free=True, log=False, interp=None, masked=MASKED):
         """
         Build the look-up table.
@@ -194,6 +196,9 @@ class GradientColormap(BaseColormap):
         :param interp: [(x1, y1), (x2, y2), ...]
         :param masked: rgba tuple to use as masked color
         """
+        values, colors = zip(*data)
+
+        # options
         self.log = log
         self.free = free
         self.masked = np.array(masked, 'u1')
@@ -249,6 +254,4 @@ def get(name):
 def create(colormap):
     """ Create a colormap from a dictionary. """
     kwargs = colormap.copy()
-    values, colors = zip(*kwargs.pop('data'))
-    kwargs.update(values=values, colors=colors)
     return getattr(sys.modules[__name__], kwargs.pop('type'))(**kwargs)

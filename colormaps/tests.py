@@ -6,12 +6,16 @@ from __future__ import unicode_literals
 from __future__ import absolute_import
 from __future__ import division
 
+import os
+import shutil
+import tempfile
 import unittest
 
 import numpy as np
 
 import colormaps
 from colormaps import core
+from colormaps import utils
 
 MASKED = [0, 0, 255, 255]
 INVALID = [0, 255, 0, 255]
@@ -44,6 +48,33 @@ def gradient(size=3, log=False, free=True, interp=None):
         ],
     }
     return colormaps.create(colormap)
+
+
+def cdict():
+    return {
+        'blue': (
+            (0.000, 0.5, 0.5),
+            (0.110, 1.0, 1.0),
+            (0.340, 1.0, 1.0),
+            (0.650, 0.0, 0.0),
+            (1.000, 0.0, 0.0)
+        ),
+        'green': (
+            (0.000, 0.0, 0.0),
+            (0.125, 0.0, 0.0),
+            (0.375, 1.0, 1.0),
+            (0.640, 1.0, 1.0),
+            (0.910, 0.0, 0.0),
+            (1.000, 0.0, 0.0)
+        ),
+        'red': (
+            (0.000, 0.0, 0.0),
+            (0.350, 0.0, 0.0),
+            (0.660, 1.0, 1.0),
+            (0.890, 1.0, 1.0),
+            (1.000, 0.5, 0.5)
+        )
+    }
 
 
 class TestColormap(unittest.TestCase):
@@ -143,3 +174,35 @@ class TestColormap(unittest.TestCase):
 
     def test_not_registered(self):
         self.assertRaises(NameError, colormaps.get, 'nonsense')
+
+
+class TestUtils(unittest.TestCase):
+    def test_cdict2config(self):
+        config = {
+            'type': u'GradientColormap',
+            'data': [(0.000,   [0,   0, 127, 255]),
+                     (0.110,    [0,  0, 255, 255]),
+                     (0.125,   [0,   0, 255, 255]),
+                     (0.340,   [0, 219, 255, 255]),
+                     (0.350,   [0, 229, 246, 255]),
+                     (0.375,  [20, 255, 226, 255]),
+                     (0.640, [238, 255,   8, 255]),
+                     (0.650, [246, 245,   0, 255]),
+                     (0.660, [255, 236,   0, 255]),
+                     (0.890, [255,  18,   0, 255]),
+                     (0.910, [231, 000,   0, 255]),
+                     (1.000, [127, 000,   0, 255])],
+            }
+        self.assertEqual(utils.cdict2config(cdict()), config)
+
+    def test_save(self):
+        name = 'test'
+        path = tempfile.mkdtemp()
+        here = os.getcwd()
+        os.chdir(path)
+        utils.save(cdict=cdict(), name=name)
+        os.chdir(here)
+        self.assertTrue(
+            os.path.exists(os.path.join(path, '{}.json'.format(name))),
+        )
+        shutil.rmtree(path)

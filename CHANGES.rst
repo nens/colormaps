@@ -5,7 +5,17 @@ Changelog of colormaps
 0.1.3 (unreleased)
 ------------------
 
-- Load from json, handle masked arrays
+- Handle masked arrays
+
+- Init from a config
+
+- Do (log) normalization and interpolation
+
+- Handle limits for both types of maps
+
+- Custom values for invalid (only discrete) and masked
+
+- Add cdict converter
 
 
 0.1.2 (2014-05-22)
