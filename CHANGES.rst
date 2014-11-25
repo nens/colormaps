@@ -5,7 +5,7 @@ Changelog of colormaps
 1.1 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Really use masked for discrete when outside limits
 
 
 1.0 (2014-11-25)

@@ -127,6 +127,7 @@ class DiscreteColormap(BaseColormap):
         self.masked = np.array(masked, 'u1')
         self.invalid = np.array(invalid, 'u1')
         self.rgba = self.invalid * np.ones((self.limits[1] + 2, 4), dtype='u1')
+        self.rgba[-1] = self.masked
         self.rgba[np.array(values)] = colors
 
     def convert(self, data, limits):
