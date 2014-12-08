@@ -7,6 +7,10 @@ Changelog of colormaps
 
 - Really use masked for discrete when outside limits
 
+- Add manager
+
+- Add colormaps
+
 
 1.0 (2014-11-25)
 ----------------
