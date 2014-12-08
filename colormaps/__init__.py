@@ -9,7 +9,15 @@ from __future__ import division
 from colormaps.core import get
 from colormaps.core import create
 from colormaps.core import registered
+from colormaps.core import DiscreteColormap
+from colormaps.core import GradientColormap
+
+from colormaps.managers import Manager
 
 get
 create
 registered
+DiscreteColormap
+GradientColormap
+
+Manager

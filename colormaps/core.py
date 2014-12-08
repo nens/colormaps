@@ -137,7 +137,7 @@ class DiscreteColormap(BaseColormap):
         :param data: A numpy array, not masked.
         :param limits: m, n tuple having m <= n.
 
-        Values outside the limits will be colored with the invalid color,
+        Values outside the limits will be colored with the masked color,
         even if a value was given during the colormap initialization.
         """
         # tighten limits to colormap
