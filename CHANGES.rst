@@ -2,7 +2,7 @@ Changelog of colormaps
 ===================================================
 
 
-1.1 (unreleased)
+1.1 (2014-12-08)
 ----------------
 
 - Really use masked for discrete when outside limits
