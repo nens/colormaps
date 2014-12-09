@@ -57,7 +57,8 @@ Or use your own collection::
 
     >>> manager = colormaps.Manager('path/to/my/colormap/collection')
 
-The path should point to a folder with files like this::
+The path should point to a folder with json-files ('my-colormap.json')
+containing the kwargs for colormaps.create() like this::
 
     {
       "type": "GradientColormap",
