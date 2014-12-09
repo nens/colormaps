@@ -54,6 +54,7 @@ Use a collection of predefined colors using a manager::
     [u'Spectral', u'summer', u'coolwarm']
 
 Or use your own collection::
+
     >>> manager = colormaps.Manager('path/to/my/colormap/collection')
 
 The path should point to a folder with files like this::
