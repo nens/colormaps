@@ -5,7 +5,7 @@ Changelog of colormaps
 1.2 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Rearrange some colors.
 
 
 1.1 (2014-12-08)
