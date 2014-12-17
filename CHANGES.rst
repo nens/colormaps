@@ -5,7 +5,7 @@ Changelog of colormaps
 1.1.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Add label functionality by locale
 
 
 1.1.1 (2014-12-15)

@@ -30,6 +30,7 @@ def discrete():
             (0, (127, 000, 000, 255)),
             (2, (255, 000, 000, 255)),
         ],
+        'labels': {'en_EN': {0: 'label0', 2: 'label2'}}
     }
     return colormaps.create(colormap)
 
@@ -136,6 +137,10 @@ class TestColormap(unittest.TestCase):
              [255, 000, 000, 255]]
         )
 
+    def test_gradient_no_labels(self):
+        colormap = gradient()
+        self.assertEqual(colormap.label([5, 6]), [5, 6])
+
     def test_discrete_repr(self):
         colormap = discrete()
         self.assertTrue(repr(colormap))
@@ -146,6 +151,10 @@ class TestColormap(unittest.TestCase):
             colormap(0, limits=(1, 2)).tolist(),
             MASKED,
         )
+
+    def test_discrete_label(self):
+        colormap = discrete()
+        self.assertEquals(colormap.label([0, 1, 2]), ['label0', 1, 'label2'])
 
     def test_discrete(self):
         colormap = discrete()
@@ -174,6 +183,27 @@ class TestColormap(unittest.TestCase):
 
     def test_not_registered(self):
         self.assertRaises(NameError, colormaps.get, 'nonsense')
+
+
+class TestManager(unittest.TestCase):
+    def test_manager(self):
+        manager = colormaps.Manager()
+        # check for duplicate keys
+        self.assertEqual(len(manager.keys), len(manager.registered))
+        # load from disk
+        colormap = manager.get('landuse')  # load path
+        self.assertIsInstance(colormap, core.DiscreteColormap)
+        # return from cache
+        colormap = manager.get('landuse')  # cache path
+        self.assertIsInstance(colormap, core.DiscreteColormap)
+        # labeling with existing labels
+        self.assertEquals(colormap.label([1]),
+                          ['1 - BAG - Overig / Onbekend'])
+        # not existing colormap
+        self.assertRaises(NameError, manager.get, 'blabla')
+        # not existing colormap, not existing labels
+        colormap = manager.get('jet')
+        self.assertEqual(colormap.label([5, 6]), [5, 6])
 
 
 class TestUtils(unittest.TestCase):
@@ -206,18 +236,3 @@ class TestUtils(unittest.TestCase):
             os.path.exists(os.path.join(path, '{}.json'.format(name))),
         )
         shutil.rmtree(path)
-
-
-class TestManager(unittest.TestCase):
-    def test_manager(self):
-        manager = colormaps.Manager()
-        # check for duplicate keys
-        self.assertEqual(len(manager.keys), len(manager.registered))
-        # load from disk
-        colormap = manager.get('jet')  # load path
-        self.assertIsInstance(colormap, core.GradientColormap)
-        # return from cache
-        colormap = manager.get('jet')  # cache path
-        self.assertIsInstance(colormap, core.GradientColormap)
-        # not existing colormap
-        self.assertRaises(NameError, manager.get, 'blabla')

@@ -75,6 +75,13 @@ class BaseColormap(object):
         """ Register a colormap for use with get(). """
         registered[name] = self
 
+    def label(self, data, locale=None):
+        """ Return a list of labels. """
+        if not self.labels:
+            return data
+        labels = self.labels.get(locale, self.labels.values()[0])
+        return [labels.get(d, d) for d in data]
+
     def __len__(self):
         """
         Return the official length of the rgba array.
@@ -117,7 +124,7 @@ class DiscreteColormap(BaseColormap):
                                upper=self.limits[1],
                                name=self.__class__.__name__)
 
-    def __init__(self, data, masked=MASKED, invalid=INVALID):
+    def __init__(self, data, masked=MASKED, invalid=INVALID, labels={}):
         """
         Build the look-up table.
         """
@@ -126,6 +133,7 @@ class DiscreteColormap(BaseColormap):
         self.limits = min(values), max(values)
         self.masked = np.array(masked, 'u1')
         self.invalid = np.array(invalid, 'u1')
+        self.labels = labels
         self.rgba = self.invalid * np.ones((self.limits[1] + 2, 4), dtype='u1')
         self.rgba[-1] = self.masked
         self.rgba[np.array(values)] = colors
@@ -185,7 +193,8 @@ class GradientColormap(BaseColormap):
         return data.data
 
     def __init__(self, data,
-                 size=256, free=True, log=False, interp=None, masked=MASKED):
+                 size=256, log=False, free=True,
+                 interp=None, masked=MASKED, labels={}):
         """
         Build the look-up table.
 
@@ -203,6 +212,7 @@ class GradientColormap(BaseColormap):
         self.log = log
         self.free = free
         self.masked = np.array(masked, 'u1')
+        self.labels = labels
         self.limits = min(values), max(values)
 
         # store interpolation inputs scaled
