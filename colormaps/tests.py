@@ -154,6 +154,7 @@ class TestColormap(unittest.TestCase):
 
     def test_discrete_label(self):
         colormap = discrete()
+        self.assertEqual(colormap.label(0), 'label0')
         self.assertEquals(colormap.label([0, 1, 2]), ['label0', 1, 'label2'])
 
     def test_discrete(self):

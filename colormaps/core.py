@@ -80,7 +80,9 @@ class BaseColormap(object):
         if not self.labels:
             return data
         labels = self.labels.get(locale, self.labels.values()[0])
-        return [labels.get(d, d) for d in data]
+        return np.vectorize(
+            lambda x: labels.get(x, x), otypes=[np.object],
+        )(data).tolist()
 
     def __len__(self):
         """

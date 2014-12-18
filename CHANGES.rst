@@ -5,7 +5,7 @@ Changelog of colormaps
 1.3 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Labeling is vectorized now.
 
 
 1.2 (2014-12-17)
