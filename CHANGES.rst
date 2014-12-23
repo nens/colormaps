@@ -7,6 +7,8 @@ Changelog of colormaps
 
 - Labeling is vectorized now.
 
+- Add world soil colors and labels.
+
 
 1.2 (2014-12-17)
 ----------------
