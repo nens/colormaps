@@ -5,7 +5,7 @@ Changelog of colormaps
 1.2.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Adjust base colormap for radar, differentiate as well.
 
 
 1.2.1 (2014-12-23)
