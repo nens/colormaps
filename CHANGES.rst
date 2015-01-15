@@ -2,7 +2,7 @@ Changelog of colormaps
 ===================================================
 
 
-1.2.2 (unreleased)
+1.2.2 (2015-01-15)
 ------------------
 
 - Adjust base colormap for radar, differentiate as well.
