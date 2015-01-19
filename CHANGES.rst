@@ -5,7 +5,7 @@ Changelog of colormaps
 1.2.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Add the missing 5min variant for radar.
 
 
 1.2.2 (2015-01-15)
