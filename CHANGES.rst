@@ -2,7 +2,7 @@ Changelog of colormaps
 ===================================================
 
 
-1.2.4 (unreleased)
+1.2.4 (2015-01-27)
 ------------------
 
 - Add vietnam cover colors.
