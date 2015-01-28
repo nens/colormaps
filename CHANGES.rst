@@ -5,7 +5,7 @@ Changelog of colormaps
 1.2.5 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Remove the white haze in radar images.
 
 
 1.2.4 (2015-01-27)
