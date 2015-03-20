@@ -1,3 +1,4 @@
+[
 [1, "1 - NLC200 - Forest (indigenous)"],
 [2, "2 - NLC200 - Woodland"],
 [3, "3 - NLC200 - Thicket, Bushland, Bush Clumps, High Fynbos"],
@@ -45,4 +46,5 @@
 [46, "46 - NLC200 - Urban and Built-up (industrial and transport: light)"],
 [47, "47 - NLC200 - Mines and Quarries (underground and subsurface mining)"],
 [48, "48 - NLC200 - Mines and Quarries (surface-based mining)"],
-[49, "49 - NLC200 - Mines and Quarries (mine tailings, waste dumps)"],
+[49, "49 - NLC200 - Mines and Quarries (mine tailings, waste dumps)"]
+]

@@ -1,3 +1,4 @@
+[
 [1, "1 - ISRIC - Black and red, strongly structured clayed soils with a high base status"],
 [2, "2 - ISRIC - Greyish, sandy excessively drained soils"],
 [3, "3 - ISRIC - Red and yellow, massive or weak structured soils with low to medium structured"],
@@ -12,4 +13,5 @@
 [12, "12 - ISRIC - Soils with minimal development- usualy shallow on hard weathering rock, with or without intermitten diverse soils.Lime present"],
 [13, "13 - ISRIC - Soils with negligible to weak profile development, usualy on recent flood plain"],
 [14, "14 - ISRIC - Waterbody"],
-[15, "15 - ISRIC - Coastal zone"],
+[15, "15 - ISRIC - Coastal zone"]
+]
