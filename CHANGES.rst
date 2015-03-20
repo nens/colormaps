@@ -7,6 +7,8 @@ Changelog of colormaps
 
 - Remove the white haze in radar images.
 
+- Add Port Elisabeth SA soil and land-cover colormaps.
+
 
 1.2.4 (2015-01-27)
 ------------------
