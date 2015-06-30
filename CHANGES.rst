@@ -9,6 +9,8 @@ Changelog of colormaps
 
 - Add Port Elisabeth SA soil and land-cover colormaps.
 
+- Change drought to non-free colormap.
+
 
 1.2.4 (2015-01-27)
 ------------------
