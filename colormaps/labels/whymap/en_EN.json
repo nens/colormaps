@@ -1,14 +1,14 @@
 [
-[11, "11 - whymap - very low recharge (<2 mm year)"],
-[12, "12 - whymap - low recharge (2-20 mm/year)"],
-[13, "13 - whymap - medium recharge (20-100 mm/year)"],
-[14, "14 - whymap - high recharge (100-300 mm/year)"],
-[15, "15 - whymap - very high recharge (>300 mm/year)"],
-[22, "22 - whymap - low - very low recharge (<20 mm/year)"],
-[23, "23 - whymap - medium recharge (20-100 mm/year)"],
-[24, "24 - whymap - high recharge (100-300 mm/year)"],
-[25, "25 - whymap - very high recharge (>300 mm/year)"],
-[33, "33 - whymap - very low recharge (<100 mm/year)"],
-[34, "34 - whymap - high recharge (>100 mm/year)"],
-[88, "88 - whymap - Continuous Ice Sheet"]
+[11, "11 - BGR - very low recharge (<2 mm year)"],
+[12, "12 - BGR - low recharge (2-20 mm/year)"],
+[13, "13 - BGR - medium recharge (20-100 mm/year)"],
+[14, "14 - BGR - high recharge (100-300 mm/year)"],
+[15, "15 - BGR - very high recharge (>300 mm/year)"],
+[22, "22 - BGR - low-very low recharge (<20 mm/year)"],
+[23, "23 - BGR - medium recharge (20-100 mm/year)"],
+[24, "24 - BGR - high recharge (100-300 mm/year)"],
+[25, "25 - BGR - very high recharge (>300 mm/year)"],
+[33, "33 - BGR - very low recharge (<100 mm/year)"],
+[34, "34 - BGR - high recharge (>100 mm/year)"],
+[88, "88 - BGR - Continuous Ice Sheet"]
 ]
