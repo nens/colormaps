@@ -5,6 +5,8 @@ Changelog of colormaps
 1.2.5 (unreleased)
 ------------------
 
+- Add colormaps and labels for forests, deforestation and floods.
+
 - Remove the white haze in radar images.
 
 - Add Port Elisabeth SA soil and land-cover colormaps.
