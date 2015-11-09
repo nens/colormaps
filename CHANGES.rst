@@ -13,6 +13,8 @@ Changelog of colormaps
 
 - Change drought to non-free colormap.
 
+- Update labels and colors of indonesia flood map.
+
 
 1.2.4 (2015-01-27)
 ------------------
