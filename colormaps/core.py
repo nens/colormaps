@@ -221,7 +221,7 @@ class GradientColormap(BaseColormap):
         if interp:
             self.interp = map(np.array, zip(*interp))
             if log:
-                np.log(self.interp[0], self.interp[0])
+                np.log(self.interp[0], self.interp[0])  # nothing happens?
         else:
             self.interp = None
 
