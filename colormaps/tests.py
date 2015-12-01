@@ -192,10 +192,10 @@ class TestManager(unittest.TestCase):
         # check for duplicate keys
         self.assertEqual(len(manager.keys), len(manager.registered))
         # load from disk
-        colormap = manager.get('landuse')  # load path
+        colormap = manager.get('lc-wss')  # load path
         self.assertIsInstance(colormap, core.DiscreteColormap)
         # return from cache
-        colormap = manager.get('landuse')  # cache path
+        colormap = manager.get('lc-wss')  # cache path
         self.assertIsInstance(colormap, core.DiscreteColormap)
         # labeling with existing labels
         self.assertEquals(colormap.label([1]),
