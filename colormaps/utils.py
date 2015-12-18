@@ -42,7 +42,7 @@ def cdict2config(cdict):
         floats[:, index[color]] = np.interp(values, *interp)
         integers = (255 * floats).astype('u1')
     return {'type': 'GradientColormap',
-            'data': zip(values, integers.tolist())}
+            'data': list(zip(values, integers.tolist()))}
 
 
 def save(cdict, name):

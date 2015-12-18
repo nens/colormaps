@@ -79,7 +79,7 @@ class BaseColormap(object):
         """ Return a list of labels. """
         if not self.labels:
             return data
-        labels = self.labels.get(locale, self.labels.values()[0])
+        labels = self.labels.get(locale, next(iter(self.labels.values())))
         return np.vectorize(
             lambda x: labels.get(x, x), otypes=[np.object],
         )(data).tolist()
@@ -219,7 +219,7 @@ class GradientColormap(BaseColormap):
 
         # store interpolation inputs scaled
         if interp:
-            self.interp = map(np.array, zip(*interp))
+            self.interp = list(map(np.array, zip(*interp)))
             if log:
                 np.log(self.interp[0], self.interp[0])  # nothing happens?
         else:
