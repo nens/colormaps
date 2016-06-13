@@ -50,7 +50,7 @@ class Data(object):
                               limits=function(self.limits))
 
     def log(self):
-        """ Transiform to log domain. """
+        """ Transform to log domain. """
         return self.do(lambda x: np.log(x))
 
     def interp(self, interp):
