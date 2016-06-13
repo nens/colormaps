@@ -62,7 +62,7 @@ class Data(object):
         factor = self.limits[1] - self.limits[0]
         if factor == 0:
             # single value, return 0.5
-            return self.do(lambda x: 0.5 * np.ones(x.shape, x.dtype))
+            return self.do(lambda x: np.full(x.shape, 0.5, dtype='f8'))
         offset = self.limits[0]
 
         # scale
