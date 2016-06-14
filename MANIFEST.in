@@ -1,4 +1,10 @@
-# Include docs in the root.
 include *.rst
-# Include everything in our project directory.
-graft colormaps
+recursive-include colormaps *.py
+recursive-include colormaps *.json
+
+exclude .coveragerc
+exclude doc
+exclude bootstrap.py
+exclude buildout.cfg
+recursive-exclude doc *
+recursive-exclude colormaps *.pyc
