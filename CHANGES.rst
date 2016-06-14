@@ -2,8 +2,8 @@ Changelog of colormaps
 ===================================================
 
 
-1.2.5 (unreleased)
-------------------
+1.3 (2016-06-14)
+----------------
 
 - Add colormaps and labels for forests, deforestation and floods.
 
