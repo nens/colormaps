@@ -15,6 +15,8 @@ Changelog of colormaps
 
 - Update labels and colors of indonesia flood map.
 
+- Coerce to dicts for embedded labels in colormap definitions
+
 
 1.2.4 (2015-01-27)
 ------------------
