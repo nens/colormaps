@@ -5,7 +5,9 @@ Changelog of colormaps
 1.3.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Cast integer interpolations to floats to fix test
+
+- Be clearer about the in-place log() on the interpolation inputs
 
 
 1.3 (2016-06-14)

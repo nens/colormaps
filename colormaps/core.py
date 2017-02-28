@@ -219,9 +219,9 @@ class GradientColormap(BaseColormap):
 
         # store interpolation inputs scaled
         if interp:
-            self.interp = list(map(np.array, zip(*interp)))
+            self.interp = list(np.array(interp, dtype='f8').transpose())
             if log:
-                np.log(self.interp[0], self.interp[0])  # nothing happens?
+                np.log(self.interp[0], out=self.interp[0])
         else:
             self.interp = None
 
