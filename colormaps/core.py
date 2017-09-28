@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 from __future__ import absolute_import
 from __future__ import division
 
+import math
 import numpy as np
 import sys
 
@@ -71,6 +72,8 @@ class Data(object):
 
 class BaseColormap(object):
     """ Basic stuff """
+    colormap_type = 'base'
+
     def register(self, name):
         """ Register a colormap for use with get(). """
         registered[name] = self
@@ -114,10 +117,22 @@ class BaseColormap(object):
             rgba[~mask] = self.convert(array.compressed(), limits)
         return rgba
 
+    def get_legend_data(self, limits, steps):
+        """"
+        Return 1-D numpy array of useful values to show in a legend that
+        goes from legendmin to legendmax.
+        Default: just use linspace.
+        """
+        if limits is None:
+            limits = self.limits
+
+        return np.linspace(limits[0], limits[1], steps)
+
 
 class DiscreteColormap(BaseColormap):
     """ Colormap for classified data. """
     dtype = np.dtype('u8')
+    colormap_type = 'discrete'
 
     def __repr__(self):
         template = '<{name}: size {size}, limits {lower}-{upper}>'
@@ -162,9 +177,21 @@ class DiscreteColormap(BaseColormap):
         ).filled(self.limits[1] + 1)
         return self.rgba[index]
 
+    def get_legend_data(self, limits, steps):
+        """For a discrete map, we ignore 'steps'."""
+        if limits is None:
+            limits = self.limits
+
+        return np.array([
+            idx for idx in range(self.rgba.shape[0]) if
+            not np.array_equal(self.rgba[idx], self.invalid)
+            and limits[0] <= idx <= limits[1]
+        ])
+
 
 class GradientColormap(BaseColormap):
     dtype = np.dtype('f8')
+    colormap_type = 'gradient'
 
     def __repr__(self):
         template = ('<{name}: size {size}, '
@@ -255,6 +282,29 @@ class GradientColormap(BaseColormap):
 
         data = self.process(data=data, limits=limits)
         return self.rgba[np.uint64(len(self) * data)]
+
+    def get_legend_data(self, limits, steps):
+        """We need to interpolate the range, then take a linear range between those
+        interpolated values, then extrapolate the range back.
+
+        If this is a log colormap, first log the range, then exp the results back."""
+        if limits is None:
+            limits = self.limits
+
+        if self.log:
+            limits = [math.log(limits[0]), math.log(limits[1])]
+
+        if self.interp:
+            interpolated = np.interp(limits, self.interp[0], self.interp[1])
+            linear = np.linspace(interpolated[0], interpolated[1], steps)
+            data = np.interp(linear, self.interp[1], self.interp[0])
+        else:
+            data = np.linspace(limits[0], limits[1], steps)
+
+        if self.log:
+            data = np.exp(data)
+
+        return data
 
 
 def get(name):
