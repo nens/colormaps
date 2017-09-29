@@ -117,7 +117,6 @@ class BaseColormap(object):
 
 class DiscreteColormap(BaseColormap):
     """ Colormap for classified data. """
-    dtype = np.dtype('u8')
 
     def __repr__(self):
         template = '<{name}: size {size}, limits {lower}-{upper}>'
@@ -164,7 +163,6 @@ class DiscreteColormap(BaseColormap):
 
 
 class GradientColormap(BaseColormap):
-    dtype = np.dtype('f8')
 
     def __repr__(self):
         template = ('<{name}: size {size}, '
