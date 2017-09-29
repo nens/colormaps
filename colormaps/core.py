@@ -180,12 +180,14 @@ class DiscreteColormap(BaseColormap):
         """For a discrete map, we ignore 'steps'."""
         if limits is None:
             limits = self.limits
+        else:
+            # tighten custom limits to colormap
+            limits = np.array(limits).clip(*self.limits)
 
-        return np.array([
-            idx for idx in range(self.rgba.shape[0]) if
-            not np.array_equal(self.rgba[idx], self.invalid)
-            and limits[0] <= idx <= limits[1]
-        ])
+        return np.in1d(
+            self.rgba.view('u4')[limits[0]:limits[1] + 1],
+            self.invalid.view('u4'), invert=True,
+        ).nonzero()[0] + limits[0]
 
 
 class GradientColormap(BaseColormap):
@@ -282,12 +284,16 @@ class GradientColormap(BaseColormap):
         return self.rgba[np.uint64(len(self) * data)]
 
     def get_legend_data(self, limits, steps):
-        """We need to interpolate the range, then take a linear range between those
-        interpolated values, then extrapolate the range back.
+        """We need to interpolate the range, then take a linear range between
+        those interpolated values, then extrapolate the range back.
 
-        If this is a log colormap, first log the range, then exp the results back."""
+        If this is a log colormap, first log the range, then exp the results
+        back."""
         if limits is None:
             limits = self.limits
+        else:
+            # tighten custom limits to colormap
+            limits = np.array(limits).clip(*self.limits)
 
         if self.log:
             limits = [math.log(limits[0]), math.log(limits[1])]
