@@ -171,6 +171,22 @@ class TestColormap(unittest.TestCase):
             [3, 4, 5],
         )
 
+    def test_discrete_legend_data(self):
+        colormap = discrete()
+        # There are two indices, 0 and 2; without limits, they should all be returned.
+        self.assertEquals(
+            colormap.get_legend_data(None, None).tolist(),
+            [0, 2]
+        )
+
+    def test_discrete_legend_data_with_limits(self):
+        colormap = discrete()
+        # If we give limits, only indices in those (inclusive) are returned
+        self.assertEquals(
+            colormap.get_legend_data([1, 2], None).tolist(),
+            [2]
+            )
+
     def test_discrete_repr(self):
         colormap = discrete()
         self.assertTrue(repr(colormap))

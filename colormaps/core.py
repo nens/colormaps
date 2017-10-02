@@ -117,17 +117,6 @@ class BaseColormap(object):
             rgba[~mask] = self.convert(array.compressed(), limits)
         return rgba
 
-    def get_legend_data(self, limits, steps):
-        """"
-        Return 1-D numpy array of useful values to show in a legend that
-        goes from legendmin to legendmax.
-        Default: just use linspace.
-        """
-        if limits is None:
-            limits = self.limits
-
-        return np.linspace(limits[0], limits[1], steps)
-
 
 class DiscreteColormap(BaseColormap):
     """ Colormap for classified data. """
