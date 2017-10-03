@@ -9,6 +9,8 @@ Changelog of colormaps
 
 - Be clearer about the in-place log() on the interpolation inputs
 
+- Add function to give a range of numbers to use in legends
+
 
 1.3 (2016-06-14)
 ----------------

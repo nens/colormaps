@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 from __future__ import absolute_import
 from __future__ import division
 
+from math import exp
 import os
 import shutil
 import tempfile
@@ -140,6 +141,51 @@ class TestColormap(unittest.TestCase):
     def test_gradient_no_labels(self):
         colormap = gradient()
         self.assertEqual(colormap.label([5, 6]), [5, 6])
+
+    def test_gradient_legend_data(self):
+        colormap = gradient()
+        self.assertEqual(
+            colormap.get_legend_data(limits=None, steps=3).tolist(),
+            [3, 4, 5],
+        )
+
+    def test_gradient_legend_data_limits(self):
+        colormap = gradient()
+        self.assertEqual(
+            colormap.get_legend_data(limits=(3, 5), steps=3).tolist(),
+            [3, 4, 5],
+        )
+
+    def test_gradient_log_legend_data(self):
+        colormap = gradient(log=True)
+        limits = exp(1.2), exp(1.4)
+        self.assertAlmostEqual(
+            colormap.get_legend_data(limits=limits, steps=3).tolist()[1],
+            exp(1.3),
+        )
+
+    def test_gradient_interp_legend_data(self):
+        colormap = gradient(interp=[(3, 0), (5, 1)])
+        self.assertEqual(
+            colormap.get_legend_data(limits=(3, 5), steps=3).tolist(),
+            [3, 4, 5],
+        )
+
+    def test_discrete_legend_data(self):
+        colormap = discrete()
+        # There are two indices, 0 and 2; without limits, they should all be returned.
+        self.assertEquals(
+            colormap.get_legend_data(None, None).tolist(),
+            [0, 2]
+        )
+
+    def test_discrete_legend_data_with_limits(self):
+        colormap = discrete()
+        # If we give limits, only indices in those (inclusive) are returned
+        self.assertEquals(
+            colormap.get_legend_data([1, 2], None).tolist(),
+            [2]
+            )
 
     def test_discrete_repr(self):
         colormap = discrete()
