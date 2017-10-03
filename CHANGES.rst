@@ -2,8 +2,8 @@ Changelog of colormaps
 ===================================================
 
 
-1.3.1 (unreleased)
-------------------
+1.4 (2017-10-03)
+----------------
 
 - Cast integer interpolations to floats to fix test
 
