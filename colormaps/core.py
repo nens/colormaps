@@ -280,9 +280,6 @@ class GradientColormap(BaseColormap):
         back."""
         if limits is None:
             limits = self.limits
-        else:
-            # tighten custom limits to colormap
-            limits = np.array(limits).clip(*self.limits)
 
         if self.log:
             limits = [math.log(limits[0]), math.log(limits[1])]
