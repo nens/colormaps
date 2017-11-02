@@ -123,6 +123,15 @@ class TestColormap(unittest.TestCase):
             [127, 000, 000, 255],
         )
 
+    def test_gradient_legend_data_limits_doesnt_clip(self):
+        colormap = gradient()
+        # Should map the data to the 0...2 range, even if the limits of
+        # the gradient are 3 and 5 (because that's irrelevant)
+        self.assertEquals(
+            colormap.get_legend_data([0, 2], 5).tolist(),
+            [0, 0.5, 1, 1.5, 2]
+        )
+
     def test_gradient(self):
         colormap = gradient()
         # scalars
@@ -173,7 +182,8 @@ class TestColormap(unittest.TestCase):
 
     def test_discrete_legend_data(self):
         colormap = discrete()
-        # There are two indices, 0 and 2; without limits, they should all be returned.
+        # There are two indices, 0 and 2; without limits, they should all be
+        # returned.
         self.assertEquals(
             colormap.get_legend_data(None, None).tolist(),
             [0, 2]
