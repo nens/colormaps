@@ -5,7 +5,7 @@ Changelog of colormaps
 1.5 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Fixed legend bug.
 
 
 1.4 (2017-10-03)
