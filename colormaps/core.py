@@ -92,7 +92,7 @@ class BaseColormap(object):
         Return the official length of the rgba array.
 
         The actual rgba is one element bigger, for different reasons. The
-        DiscreteColormap uses it for storing the invalid color. The
+        DiscreteColormap uses it for storing the 'masked' color. The
         GradientColormap uses it so that the highest value, that is 1.0
         after scaling, does not fall out of the rgba array when looking
         up by index.
