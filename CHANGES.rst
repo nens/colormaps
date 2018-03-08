@@ -5,7 +5,13 @@ Changelog of colormaps
 1.4.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Colormaps directly the store.get_data output for better performance
+
+- Mappings using the `interp` argument can handle unsorted values
+
+- `interp` can handle mappings that change the sign (negate)
+
+- The order of interp and log is swapped: first interp, then log
 
 
 1.4.1 (2017-11-02)
