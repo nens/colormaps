@@ -6,7 +6,6 @@ from __future__ import unicode_literals
 from __future__ import absolute_import
 from __future__ import division
 
-import math
 import numpy as np
 import sys
 
@@ -288,7 +287,7 @@ class GradientColormap(BaseColormap):
             limits = self.limits
 
         if self.log:
-            limits = [math.log(limits[0]), math.log(limits[1])]
+            limits = np.log(limits)
 
         if self.interp:
             interpolated = np.interp(limits, self.interp[0], self.interp[1])
