@@ -138,7 +138,15 @@ class TestColormap(unittest.TestCase):
         m = np.ma.masked
         self.assertEqual(colormap(m).tolist(), MASKED)
         self.assertEqual(colormap(7).tolist(), [191, 000, 000, 255])
-        # array
+        # dict (Store.get_data return value, fastest)
+        self.assertEqual(
+            colormap(dict(values=[2, 3, 4, 6], no_data_value=3)).tolist(),
+            [[127, 000, 000, 255],
+             MASKED,
+             [191, 000, 000, 255],
+             [255, 000, 000, 255]]
+        )
+        # MaskedArray
         self.assertEqual(
             colormap(np.ma.masked_equal([2, 3, 4, 6], 3)).tolist(),
             [[127, 000, 000, 255],
@@ -146,6 +154,7 @@ class TestColormap(unittest.TestCase):
              [191, 000, 000, 255],
              [255, 000, 000, 255]]
         )
+
 
     def test_gradient_no_labels(self):
         colormap = gradient()
@@ -219,7 +228,15 @@ class TestColormap(unittest.TestCase):
         self.assertEqual(colormap(np.ma.masked).tolist(), MASKED)
         self.assertEqual(colormap(5).tolist(), MASKED)
         self.assertEqual(colormap(2).tolist(), [255, 000, 000, 255])
-        # array
+        # dict (Store.get_data return value, fastest)
+        self.assertEqual(
+            colormap(dict(values=[0, 1, 2, 3], no_data_value=2)).tolist(),
+            [[127, 000, 000, 255],
+             INVALID,
+             MASKED,
+             MASKED],
+        )
+        # MaskedArray
         self.assertEqual(
             colormap(np.ma.masked_equal([0, 1, 2, 3], 2)).tolist(),
             [[127, 000, 000, 255],
