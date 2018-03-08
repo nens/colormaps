@@ -205,6 +205,7 @@ class TestColormap(unittest.TestCase):
              [255, 000, 000, 255]]
         )
 
+
     def test_gradient_no_labels(self):
         colormap = gradient()
         self.assertEqual(colormap.label([5, 6]), [5, 6])
