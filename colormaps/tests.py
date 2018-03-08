@@ -36,7 +36,8 @@ def discrete():
     return colormaps.create(colormap)
 
 
-def gradient(size=3, log=False, free=True, interp=None):
+def gradient(size=3, log=False, free=True, interp=None,
+             data_values=(3, 5)):
     colormap = {
         'type': 'GradientColormap',
         'size': size,
@@ -45,8 +46,8 @@ def gradient(size=3, log=False, free=True, interp=None):
         'interp': interp,
         'masked': MASKED,
         'data': [
-            (3, (127, 000, 000, 255)),
-            (5, (255, 000, 000, 255)),
+            (data_values[0], (127, 000, 000, 255)),
+            (data_values[1], (255, 000, 000, 255)),
         ],
     }
     return colormaps.create(colormap)
@@ -96,10 +97,27 @@ class TestColormap(unittest.TestCase):
         )
 
     def test_gradient_interp(self):
-        colormap = gradient(log=True, interp=[(3, 0), (5, 1)])
+        # piecewise interp
+        colormap = gradient(interp=[(3, 0), (3.1, 0.5), (5, 1)])
         self.assertEqual(
-            colormap(7).tolist(),
-            [255, 000, 000, 255],
+            colormap([2, 3, 3.1, 5, 7]).tolist(),
+            [[127, 000, 000, 255],
+             [127, 000, 000, 255],
+             [191, 000, 000, 255],
+             [255, 000, 000, 255],
+             [255, 000, 000, 255]],
+        )
+
+        # negate interp
+        colormap = gradient(data_values=[-3, -5],
+                            interp=[(1e8, -1e8), (-1e8, 1e8)])
+        self.assertEqual(
+            colormap([-2, -3, -4, -5, -6]).tolist(),
+            [[127, 000, 000, 255],
+             [127, 000, 000, 255],
+             [191, 000, 000, 255],
+             [255, 000, 000, 255],
+             [255, 000, 000, 255]],
         )
 
     def test_gradient_interp_and_clip(self):
@@ -117,10 +135,42 @@ class TestColormap(unittest.TestCase):
         )
 
     def test_gradient_log(self):
-        colormap = gradient(log=True)
+        colormap = gradient(log=True, data_values=np.exp([3, 5]))
         self.assertEqual(
-            colormap(7, limits=(7, 9)).tolist(),
-            [127, 000, 000, 255],
+            colormap(np.exp([3, 4, 5])).tolist(),
+            [[127, 000, 000, 255],
+             [191, 000, 000, 255],
+             [255, 000, 000, 255]],
+        )
+
+    def test_gradient_log_limits(self):
+        colormap = gradient(log=True, data_values=np.exp([3, 5]))
+        self.assertEqual(
+            colormap(np.exp([3, 4, 5]), limits=np.exp([4, 5])).tolist(),
+            [[127, 000, 000, 255],
+             [127, 000, 000, 255],
+             [255, 000, 000, 255]],
+        )
+
+    def test_gradient_log_interp(self):
+        # shift interp
+        colormap = gradient(log=True, interp=([-100, 0], [10000, 10100]),
+                            data_values=np.exp([3, 5]) - 100)
+        self.assertEqual(
+            colormap(np.exp([3, 4, 5]) - 100).tolist(),
+            [[127, 000, 000, 255],
+             [191, 000, 000, 255],
+             [255, 000, 000, 255]],
+        )
+
+        # negate interp
+        colormap = gradient(log=True, interp=([-1e8, 1e8], [1e8, -1e8]),
+                            data_values=-np.exp([3, 5]))
+        self.assertEqual(
+            colormap(-np.exp([3, 4, 5])).tolist(),
+            [[127, 000, 000, 255],
+             [191, 000, 000, 255],
+             [255, 000, 000, 255]],
         )
 
     def test_gradient_legend_data_limits_doesnt_clip(self):
@@ -138,7 +188,15 @@ class TestColormap(unittest.TestCase):
         m = np.ma.masked
         self.assertEqual(colormap(m).tolist(), MASKED)
         self.assertEqual(colormap(7).tolist(), [191, 000, 000, 255])
-        # array
+        # dict (Store.get_data return value, fastest)
+        self.assertEqual(
+            colormap(dict(values=[2, 3, 4, 6], no_data_value=3)).tolist(),
+            [[127, 000, 000, 255],
+             MASKED,
+             [191, 000, 000, 255],
+             [255, 000, 000, 255]]
+        )
+        # MaskedArray
         self.assertEqual(
             colormap(np.ma.masked_equal([2, 3, 4, 6], 3)).tolist(),
             [[127, 000, 000, 255],
@@ -219,7 +277,15 @@ class TestColormap(unittest.TestCase):
         self.assertEqual(colormap(np.ma.masked).tolist(), MASKED)
         self.assertEqual(colormap(5).tolist(), MASKED)
         self.assertEqual(colormap(2).tolist(), [255, 000, 000, 255])
-        # array
+        # dict (Store.get_data return value, fastest)
+        self.assertEqual(
+            colormap(dict(values=[0, 1, 2, 3], no_data_value=2)).tolist(),
+            [[127, 000, 000, 255],
+             INVALID,
+             MASKED,
+             MASKED],
+        )
+        # MaskedArray
         self.assertEqual(
             colormap(np.ma.masked_equal([0, 1, 2, 3], 2)).tolist(),
             [[127, 000, 000, 255],
