@@ -2,8 +2,8 @@ Changelog of colormaps
 ===================================================
 
 
-1.4.2 (unreleased)
-------------------
+1.5 (2018-03-08)
+----------------
 
 - Colormaps directly the store.get_data output for better performance
 
