@@ -6,18 +6,10 @@ from __future__ import unicode_literals
 from __future__ import absolute_import
 from __future__ import division
 
-from colormaps.core import get
-from colormaps.core import create
-from colormaps.core import registered
-from colormaps.core import DiscreteColormap
-from colormaps.core import GradientColormap
+from colormaps.core import get  # NOQA
+from colormaps.core import create  # NOQA
+from colormaps.core import registered  # NOQA
+from colormaps.core import DiscreteColormap  # NOQA
+from colormaps.core import GradientColormap  # NOQA
 
-from colormaps.managers import Manager
-
-get
-create
-registered
-DiscreteColormap
-GradientColormap
-
-Manager
+from colormaps.managers import Manager  # NOQA
