@@ -39,11 +39,13 @@ class Data(object):
         :param limits: min, max tuple
         """
         if limits is None:
-            self.data = np.array(data)
+            self.data = np.asarray(data)  # does not copy if data is array
             self.limits = np.array([self.data.min(), self.data.max()])
         else:
+            if limits[1] < limits[0]:
+                limits = limits[::-1]
             self.limits = np.array(limits)
-            self.data = np.array(data).clip(*self.limits)
+            self.data = np.asarray(data).clip(*self.limits)
 
     def do(self, function):
         """ Apply func to both array and limits. """
@@ -103,18 +105,26 @@ class BaseColormap(object):
         """
         Return rgba array, handle masked values.
 
-        :param data: the data to colormap
+        :param data: dict('values': np.array, 'no_data_value': number)
         :param limits: m, n tuple having m <= n.
 
         The effect of the limits parameter dependes on the colormap type
         """
-        array = np.ma.array(data)
-        mask = array.mask
-        if not mask.any():
-            return self.convert(array.data, limits)
-        rgba = self.masked * np.ones(array.shape + (4,), 'u1')
+        if isinstance(data, dict):
+            values = np.asarray(data['values'])
+            mask = np.equal(values, data['no_data_value'])
+        elif isinstance(data, np.ma.MaskedArray):
+            values = data.data
+            mask = data.mask
+        else:
+            values = np.asarray(data)
+            mask = None
+
+        if not np.any(mask):  # np.any(None) returns False
+            return self.convert(values, limits)
+        rgba = self.masked * np.ones(values.shape + (4,), 'u1')
         if not mask.all():
-            rgba[~mask] = self.convert(array.compressed(), limits)
+            rgba[~mask] = self.convert(values[~mask], limits)
         return rgba
 
 
@@ -160,9 +170,8 @@ class DiscreteColormap(BaseColormap):
             limits = np.array(limits).clip(*self.limits)
 
         # mask data outside limits
-        index = np.ma.masked_outside(
-            np.uint64(data), limits[0], limits[1],
-        ).filled(self.limits[1] + 1)
+        index = data.astype(np.uint64)
+        index[(index < limits[0]) | (index > limits[1])] = self.limits[1] + 1
         return self.rgba[index]
 
     def get_legend_data(self, limits, steps):
@@ -200,14 +209,11 @@ class GradientColormap(BaseColormap):
         interpolation, if any, or else to the input limits.
         """
         data = Data(data=data, limits=limits)
-        if self.log:
-            data = data.log()
         if self.interp:
             data = data.interp(self.interp)
-            if limits:
-                data = data.scale()
-        else:
-            data = data.scale()
+        if self.log:
+            data = data.log()
+        data = data.scale()
         return data.data
 
     def __init__(self, data,
@@ -216,8 +222,7 @@ class GradientColormap(BaseColormap):
         """
         Build the look-up table.
 
-        :param values: list of N floats
-        :param colors: list of N rgba tuples
+        :param data: list of (number, rgba tuple) that defines the stops
         :param size: size of the generated look-up table
         :param free: use data limits instead of colormap limits
         :param log: use a log scale whenever appropriate
@@ -233,11 +238,12 @@ class GradientColormap(BaseColormap):
         self.labels = {k: dict(v) for k, v in labels.items()}
         self.limits = min(values), max(values)
 
-        # store interpolation inputs scaled
-        if interp:
-            self.interp = list(np.array(interp, dtype='f8').transpose())
-            if log:
-                np.log(self.interp[0], out=self.interp[0])
+        # store interpolation inputs
+        if interp is not None:
+            xp, yp = list(np.array(interp, dtype='f8').transpose())
+            # np.interp assumes sorted x values
+            sort_inds = np.argsort(xp)
+            self.interp = xp[sort_inds], yp[sort_inds]
         else:
             self.interp = None
 
