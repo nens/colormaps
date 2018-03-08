@@ -170,7 +170,12 @@ class DiscreteColormap(BaseColormap):
 
         # mask data outside limits
         index = data.astype(np.uint64)
-        index[(index < limits[0]) | (index > limits[1])] = self.limits[1] + 1
+        out_of_bounds = (index < limits[0]) | (index > limits[1])
+        if index.ndim == 0:  # these cannot be indexed
+            if out_of_bounds:
+                index = self.limits[1] + 1
+        else:
+            index[out_of_bounds] = self.limits[1] + 1
         return self.rgba[index]
 
     def get_legend_data(self, limits, steps):
