@@ -11,7 +11,7 @@ Changelog of colormaps
 1.5 (2018-03-08)
 ----------------
 
-- Colormaps directly the store.get_data output for better performance
+- Colormaps accept raster-store-like data dictionaries for better performance
 
 - Mappings using the `interp` argument can handle unsorted values
 
