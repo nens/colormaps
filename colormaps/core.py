@@ -280,7 +280,11 @@ class GradientColormap(BaseColormap):
             limits = self.limits
 
         data = self.process(data=data, limits=limits)
-        return self.rgba[np.uint64(len(self) * data)]
+
+        # Mask invalid data created by discretisation errors etc.
+        idx = np.round(len(self) * data).astype(np.uint64)\
+                                        .clip(0, len(self) + 1)
+        return self.rgba[idx]
 
     def get_legend_data(self, limits, steps):
         """We need to interpolate the range, then take a linear range between

@@ -5,7 +5,7 @@ Changelog of colormaps
 1.6 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Performing additional masking in Data.convert()
 
 
 1.5 (2018-03-08)
