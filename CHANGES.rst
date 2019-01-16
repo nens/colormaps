@@ -2,7 +2,7 @@ Changelog of colormaps
 ===================================================
 
 
-1.7 (unreleased)
+1.7 (2019-01-16)
 ----------------
 
 - Removed np.round() in gradient CM index calculation.
