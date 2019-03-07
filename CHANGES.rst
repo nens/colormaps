@@ -2,7 +2,7 @@ Changelog of colormaps
 ===================================================
 
 
-1.8 (unreleased)
+1.8 (2019-03-07)
 ----------------
 
 - Solve an IndexError in some edge case in GradientColorMap.
