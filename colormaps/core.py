@@ -281,9 +281,12 @@ class GradientColormap(BaseColormap):
 
         data = self.process(data=data, limits=limits)
 
+        # data is in range 0 to 1, scale this to integers to index self.rgba
+        last_index = len(self.rgba) - 1
+        idx = (last_index * data).astype(np.uint64)
+
         # Mask invalid data created by discretisation errors etc.
-        idx = (len(self) * data).astype(np.uint64)\
-                                .clip(0, len(self) + 1)
+        idx = idx.clip(0, last_index)
         return self.rgba[idx]
 
     def get_legend_data(self, limits, steps):
