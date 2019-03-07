@@ -5,7 +5,7 @@ Changelog of colormaps
 1.8 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Solve an IndexError in some edge case in GradientColorMap.
 
 
 1.7 (2019-01-16)
