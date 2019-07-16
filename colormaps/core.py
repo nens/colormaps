@@ -284,6 +284,9 @@ class GradientColormap(BaseColormap):
             limits = self.limits
 
         data = self.process(data=data, limits=limits)
+
+        # data is between 0 and 1, and self.rgba deliberately has a repeated
+        # last element to handle data elements that have the value 1
         return self.rgba[np.int64(len(self) * data)]
 
     def get_legend_data(self, limits, steps):
