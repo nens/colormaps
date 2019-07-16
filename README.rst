@@ -77,10 +77,10 @@ Development installation
 
 For development, you can use a docker-compose setup::
 
-    $ docker-compose build --build-arg uid=`id -u` --build-arg gid=`id -g` web
+    $ docker-compose build --build-arg uid=`id -u` --build-arg gid=`id -g` lib
     $ docker-compose up --no-start
     $ docker-compose start
-    $ docker-compose docker-compose exec lib bash
+    $ docker-compose exec lib bash
 
     (docker)$ virtualenv . --python python3
     (docker)$ bin/pip install -r requirements.txt
