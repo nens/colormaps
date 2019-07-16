@@ -211,6 +211,8 @@ class GradientColormap(BaseColormap):
 
         If limits are not given, data is scaled according to the colormaps
         interpolation, if any, or else to the input limits.
+
+        Returned data is clipped between 0 and 1.
         """
         data = Data(data=data, limits=limits)
         if self.interp:
@@ -218,7 +220,9 @@ class GradientColormap(BaseColormap):
         if self.log:
             data = data.log()
         data = data.scale()
-        return data.data
+
+        # return the clipped array
+        return data.data.clip(0, 1)
 
     def __init__(self, data,
                  size=256, log=False, free=True,
@@ -281,13 +285,9 @@ class GradientColormap(BaseColormap):
 
         data = self.process(data=data, limits=limits)
 
-        # data is in range 0 to 1, scale this to integers to index self.rgba
-        last_index = len(self.rgba) - 1
-        idx = (last_index * data).astype(np.uint64)
-
-        # Mask invalid data created by discretisation errors etc.
-        idx = idx.clip(0, last_index)
-        return self.rgba[idx]
+        # data is between 0 and 1, and self.rgba deliberately has a repeated
+        # last element to handle data elements that have the value 1
+        return self.rgba[np.int64(len(self) * data)]
 
     def get_legend_data(self, limits, steps):
         """We need to interpolate the range, then take a linear range between

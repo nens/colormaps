@@ -1,14 +1,34 @@
-node{
-    stage "Checkout"
-    checkout scm
-
-    stage "Build"
-    sh "docker-compose build"
-    sh "docker-compose run lib buildout -vvvvv"
-
-    stage "Pep 8"
-    sh "if docker-compose run lib bin/pep8 colormaps > pep8.txt; then echo 'pep8 is a success'; else cat pep8.txt; false; fi"
-
-    stage "Test"
-    sh "docker-compose run lib bin/test"
+pipeline {
+    agent any
+    stages {
+        stage("Checkout") {
+            steps {
+                checkout scm
+                sh "echo 'COMPOSE_PROJECT_NAME=${env.JOB_NAME}-${env.BUILD_ID}' > .env"
+                sh "docker --version; docker-compose --version"
+            }
+        }
+        stage("Build") {
+            steps {
+                sh "docker-compose build --build-arg uid=`id -u` --build-arg gid=`id -g` lib"
+                sh "docker-compose run --rm lib virtualenv . --python python3"
+                sh "docker-compose run --rm lib bin/pip install -r requirements.txt"
+            }
+        }
+        stage("Test") {
+            steps {
+                sh "docker-compose run --rm lib bin/nosetests"
+            }
+        }
+        stage("Flake 8") {
+            steps {
+                sh "if docker-compose run --rm lib bin/flake8 colormaps > flake8.txt; then echo 'flake8 is a success'; else cat flake8.txt; false; fi"
+            }
+        }
+    }
+    post {
+        always {
+            sh "docker-compose down --volumes --remove-orphans && docker-compose rm -f"
+        }
+    }
 }

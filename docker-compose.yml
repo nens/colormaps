@@ -2,5 +2,9 @@ version: '2'
 services:
   lib:
     build: .
+    command: tail -F anything
     volumes:
       - .:/code
+    environment:
+      - DOCKER=True
+      - PYTHONUNBUFFERED=1
