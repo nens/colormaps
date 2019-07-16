@@ -52,8 +52,8 @@ Use a collection of predefined colors using a manager::
     >>> manager.get('jet')
     <GradientColormap: size 256, limits 0.0 - 1.0, log False, interp False>
 
-    >>> list(manager.registered.keys())[:3]
-    ['spectral_r', 'hot', 'pink_r']
+    >>> sorted(manager.registered.keys())[:3]
+    ['Accent', 'Accent_r', 'Blues']
 
 Or use your own collection::
 
