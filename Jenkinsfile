@@ -22,7 +22,7 @@ pipeline {
         }
         stage("Flake 8") {
             steps {
-                sh "if docker-compose run --rm lib flake8 colormaps > flake8.txt; then echo 'flake8 is a success'; else cat flake8.txt; false; fi"
+                sh "if docker-compose run --rm lib bin/flake8 colormaps > flake8.txt; then echo 'flake8 is a success'; else cat flake8.txt; false; fi"
             }
         }
     }
