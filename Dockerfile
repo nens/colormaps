@@ -19,7 +19,7 @@ RUN apt-get update && apt-get install -y \
     locales \
     python3 \
     python3-pip \
-&& apt-get clean -y && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    && rm -rf /var/lib/apt/lists/*
 
 
 RUN locale-gen en_US.UTF-8

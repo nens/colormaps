@@ -82,7 +82,7 @@ For development, you can use a docker-compose setup::
     $ docker-compose start
     $ docker-compose exec lib bash
 
-    (docker)$ virtualenv . --python python3
+    (docker)$ virtualenv . --python=python3
     (docker)$ bin/pip install -r requirements.txt
 
 Now you can run the tests using::
