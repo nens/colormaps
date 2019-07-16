@@ -32,11 +32,11 @@ Create a gradient colormap from red to semi-transparent blue::
 
 Where size is the amount of entries in the prepared look-up table.
 
-Calculate the value a some positions::
+Calculate the value at some positions::
 
     >>> colormap([0, 0.5, 1])
     array([[255,   0,   0, 255],
-           [128,   0, 127, 190],
+           [127,   0, 127, 190],
            [  0,   0, 255, 127]], dtype=uint8)
 
 
@@ -44,14 +44,16 @@ Register the colormap for use in other places::
 
     >>> colormap.register('my_gradient')
     >>> colormaps.get('my_gradient')
-    <colormaps.core.GradientColormap object at 0x7f3a52eb8fd0>
+    <GradientColormap: size 2048, limits 0 - 1, log False, interp False>
 
 Use a collection of predefined colors using a manager::
     
     >>> manager = colormaps.Manager()
     >>> manager.get('jet')
-    >>> m.registered.keys()[:3]
-    [u'Spectral', u'summer', u'coolwarm']
+    <GradientColormap: size 256, limits 0.0 - 1.0, log False, interp False>
+
+    >>> list(manager.registered.keys())[:3]
+    ['spectral_r', 'hot', 'pink_r']
 
 Or use your own collection::
 
@@ -68,3 +70,21 @@ containing the kwargs for colormaps.create() like this::
           [1.000, [255, 255, 255, 255]]
       ]
     }
+
+
+Development installation
+------------------------
+
+For development, you can use a docker-compose setup::
+
+    $ docker-compose build --build-arg uid=`id -u` --build-arg gid=`id -g` web
+    $ docker-compose up --no-start
+    $ docker-compose start
+    $ docker-compose docker-compose exec lib bash
+
+    (docker)$ virtualenv . --python python3
+    (docker)$ bin/pip install -r requirements.txt
+
+Now you can run the tests using::
+    
+    (docker)$ bin/nosetests
