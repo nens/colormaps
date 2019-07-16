@@ -5,7 +5,7 @@ Changelog of colormaps
 1.9 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Bump numpy to 1.17.0rc1. Indeed.
 
 
 1.8 (2019-03-07)
