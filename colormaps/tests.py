@@ -325,7 +325,7 @@ class TestManager(unittest.TestCase):
         self.assertIsInstance(colormap, core.DiscreteColormap)
         # labeling with existing labels
         self.assertEqual(colormap.label([1]),
-                          ['1 - BAG - Overig / Onbekend'])
+                         ['1 - BAG - Overig / Onbekend'])
         # not existing colormap
         self.assertRaises(NameError, manager.get, 'blabla')
         # not existing colormap, not existing labels
