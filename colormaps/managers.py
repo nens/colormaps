@@ -62,7 +62,8 @@ class Manager(object):
         if name in core.registered:
             return core.registered[name]
         if name in self.registered:
-            config = json.load(open(self.registered[name]))
+            with open(self.registered[name]) as f:
+                config = json.load(f)
             config['labels'] = self.get_labels(name)
             colormap = core.create(config)
             colormap.register(name)

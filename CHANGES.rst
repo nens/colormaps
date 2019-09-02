@@ -5,7 +5,9 @@ Changelog of colormaps
 1.8.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Revert to numpy 1.16.4.
+
+- Handle NaN values in colormaps.
 
 
 1.8.1 (2019-07-16)

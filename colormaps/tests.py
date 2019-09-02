@@ -96,6 +96,10 @@ class TestColormap(unittest.TestCase):
             [127, 000, 000, 255],
         )
 
+    def test_gradient_nan(self):
+        colormap = gradient()
+        self.assertEqual(colormap([np.nan]).tolist(), [[0, 0, 255, 255]])
+
     def test_gradient_interp(self):
         # piecewise interp
         colormap = gradient(interp=[(3, 0), (3.1, 0.5), (5, 1)])
@@ -177,7 +181,7 @@ class TestColormap(unittest.TestCase):
         colormap = gradient()
         # Should map the data to the 0...2 range, even if the limits of
         # the gradient are 3 and 5 (because that's irrelevant)
-        self.assertEquals(
+        self.assertEqual(
             colormap.get_legend_data([0, 2], 5).tolist(),
             [0, 0.5, 1, 1.5, 2]
         )
@@ -242,7 +246,7 @@ class TestColormap(unittest.TestCase):
         colormap = discrete()
         # There are two indices, 0 and 2; without limits, they should all be
         # returned.
-        self.assertEquals(
+        self.assertEqual(
             colormap.get_legend_data(None, None).tolist(),
             [0, 2]
         )
@@ -250,7 +254,7 @@ class TestColormap(unittest.TestCase):
     def test_discrete_legend_data_with_limits(self):
         colormap = discrete()
         # If we give limits, only indices in those (inclusive) are returned
-        self.assertEquals(
+        self.assertEqual(
             colormap.get_legend_data([1, 2], None).tolist(),
             [2]
             )
@@ -269,7 +273,7 @@ class TestColormap(unittest.TestCase):
     def test_discrete_label(self):
         colormap = discrete()
         self.assertEqual(colormap.label(0), 'label0')
-        self.assertEquals(colormap.label([0, 1, 2]), ['label0', 1, 'label2'])
+        self.assertEqual(colormap.label([0, 1, 2]), ['label0', 1, 'label2'])
 
     def test_discrete(self):
         colormap = discrete()
@@ -320,8 +324,8 @@ class TestManager(unittest.TestCase):
         colormap = manager.get('lc-wss')  # cache path
         self.assertIsInstance(colormap, core.DiscreteColormap)
         # labeling with existing labels
-        self.assertEquals(colormap.label([1]),
-                          ['1 - BAG - Overig / Onbekend'])
+        self.assertEqual(colormap.label([1]),
+                         ['1 - BAG - Overig / Onbekend'])
         # not existing colormap
         self.assertRaises(NameError, manager.get, 'blabla')
         # not existing colormap, not existing labels
