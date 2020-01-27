@@ -11,18 +11,18 @@ pipeline {
         stage("Build") {
             steps {
                 sh "docker-compose build --build-arg uid=`id -u` --build-arg gid=`id -g` lib"
-                sh "docker-compose run --rm lib virtualenv . --python python3"
-                sh "docker-compose run --rm lib bin/pip install -r requirements.txt"
+                sh "docker-compose run --rm lib virtualenv .venv"
+                sh "docker-compose run --rm lib .venv/bin/pip install -r requirements.txt"
             }
         }
         stage("Test") {
             steps {
-                sh "docker-compose run --rm lib bin/nosetests"
+                sh "docker-compose run --rm lib .venv/bin/pytest"
             }
         }
         stage("Flake 8") {
             steps {
-                sh "if docker-compose run --rm lib bin/flake8 colormaps > flake8.txt; then echo 'flake8 is a success'; else cat flake8.txt; false; fi"
+                sh "if docker-compose run --rm lib .venv/bin/flake8 colormaps > flake8.txt; then echo 'flake8 is a success'; else cat flake8.txt; false; fi"
             }
         }
     }
