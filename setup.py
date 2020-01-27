@@ -9,13 +9,12 @@ long_description = '\n\n'.join([
     ])
 
 install_requires = [
-    'setuptools',
     'numpy',
     ],
 
 tests_require = [
-    'nose',
-    'coverage',
+    'pytest',
+    'pytest-cov',
     ]
 
 setup(name='colormaps',

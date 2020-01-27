@@ -82,9 +82,21 @@ For development, you can use a docker-compose setup::
     $ docker-compose start
     $ docker-compose exec lib bash
 
-    (docker)$ virtualenv . --python=python3
-    (docker)$ bin/pip install -r requirements.txt
+Create & activate a virtualenv::
 
-Now you can run the tests using::
+    (docker)$ virtualenv .venv
+    (docker)$ source bin/activate
+
+Install stuff and run the tests::
+
+    (docker)(virtualenv)$ pip install -r requirements.txt
+    (docker)(virtualenv)$ pytest
+
+Update packages::
     
-    (docker)$ bin/nosetests
+    (docker)$ rm -rf .venv
+    (docker)$ virtualenv .venv
+    (docker)$ source bin/activate
+    (docker)(virtualenv)$ pip install -e .[test]
+    (docker)(virtualenv)$ pip freeze > requirements.txt
+

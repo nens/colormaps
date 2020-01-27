@@ -16,6 +16,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 # for writing Dockerfiles". https://docs.docker.com/engine/userguide/↵
 # eng-image/dockerfile_best-practices/
 RUN apt-get update && apt-get install -y \
+    git \
     locales \
     python3 \
     python3-pip \

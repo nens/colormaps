@@ -2,10 +2,7 @@
 *.py[co]
 
 # Virtualenv
-bin
-include
-lib
-man
+.venv
 
 # Unit test / coverage reports
 .coverage
@@ -15,3 +12,6 @@ man
 
 # Pycharm
 .idea
+
+# Distribution / packaging
+*.egg-info/
