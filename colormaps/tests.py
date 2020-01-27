@@ -288,6 +288,11 @@ class TestColormap(unittest.TestCase):
              MASKED,
              MASKED],
         )
+        # floats should not cause errors, not even nan
+        floats = -float('inf'), 0.5, 1.5, float('inf'), float('nan')
+        result = tuple(colormap(floats).tolist())
+        expected = MASKED, [127, 0, 0, 255], INVALID, MASKED, MASKED
+        assert expected == result
 
     def test_data_repr(self):
         data = core.Data(data=(2, 3), limits=(1, 4))
