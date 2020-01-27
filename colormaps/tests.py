@@ -91,6 +91,10 @@ class TestColormap(unittest.TestCase):
             [127, 000, 000, 255],
         )
 
+    def test_gradient_nan(self):
+        colormap = gradient()
+        self.assertEqual(colormap([np.nan]).tolist(), [[0, 0, 255, 255]])
+
     def test_gradient_interp(self):
         # piecewise interp
         colormap = gradient(interp=[(3, 0), (3.1, 0.5), (5, 1)])
@@ -316,7 +320,7 @@ class TestManager(unittest.TestCase):
         self.assertIsInstance(colormap, core.DiscreteColormap)
         # labeling with existing labels
         self.assertEqual(colormap.label([1]),
-                          ['1 - BAG - Overig / Onbekend'])
+                         ['1 - BAG - Overig / Onbekend'])
         # not existing colormap
         self.assertRaises(NameError, manager.get, 'blabla')
         # not existing colormap, not existing labels
