@@ -114,6 +114,10 @@ class BaseColormap(object):
             values = np.asarray(data)
             mask = None
 
+        # also mask non-finite values (-inf, inf, nan)
+        nan_mask = ~np.isfinite(values)
+        mask = nan_mask if mask is None else mask | nan_mask
+
         if not np.any(mask):  # np.any(None) returns False
             return self.convert(values, limits)
         rgba = self.masked * np.ones(values.shape + (4,), 'u1')
