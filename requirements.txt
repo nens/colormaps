@@ -1,5 +1,5 @@
 attrs==19.3.0
--e git+git@github.com:nens/colormaps@0337002369b8d4fb5c89a9adaf8698ae3dd8243c#egg=colormaps
+-e git+https://github.com/nens/colormaps.git@dc982ec4f565f4a59ef3aa8fd8599e0b91578da9#egg=colormaps
 coverage==5.0.3
 importlib-metadata==1.4.0
 more-itertools==8.1.0
