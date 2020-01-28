@@ -168,7 +168,7 @@ class DiscreteColormap(BaseColormap):
             limits = np.array(limits).clip(*self.limits)
 
         # mask data outside limits
-        index = data.astype(np.uint64)
+        index = data.astype(np.int64)
         out_of_bounds = (index < limits[0]) | (index > limits[1])
         if index.ndim == 0:  # these cannot be indexed
             if out_of_bounds:

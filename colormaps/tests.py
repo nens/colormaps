@@ -252,7 +252,7 @@ class TestColormap(unittest.TestCase):
         self.assertEqual(
             colormap.get_legend_data([1, 2], None).tolist(),
             [2]
-            )
+        )
 
     def test_discrete_repr(self):
         colormap = discrete()
@@ -292,6 +292,11 @@ class TestColormap(unittest.TestCase):
              MASKED,
              MASKED],
         )
+        # floats should not cause errors, not even nan
+        floats = -float('inf'), 0.5, 1.5, float('inf'), float('nan')
+        result = tuple(colormap(floats).tolist())
+        expected = MASKED, [127, 0, 0, 255], INVALID, MASKED, MASKED
+        assert expected == result
 
     def test_data_repr(self):
         data = core.Data(data=(2, 3), limits=(1, 4))
@@ -330,21 +335,22 @@ class TestManager(unittest.TestCase):
 
 class TestUtils(unittest.TestCase):
     def test_cdict2config(self):
+        n08, n18, n20 = 8, 18, 20
         config = {
             'type': u'GradientColormap',
-            'data': [(0.000,   [0,   0, 127, 255]),
-                     (0.110,    [0,  0, 255, 255]),
-                     (0.125,   [0,   0, 255, 255]),
-                     (0.340,   [0, 219, 255, 255]),
-                     (0.350,   [0, 229, 246, 255]),
-                     (0.375,  [20, 255, 226, 255]),
-                     (0.640, [238, 255,   8, 255]),
-                     (0.650, [246, 245,   0, 255]),
-                     (0.660, [255, 236,   0, 255]),
-                     (0.890, [255,  18,   0, 255]),
-                     (0.910, [231, 000,   0, 255]),
-                     (1.000, [127, 000,   0, 255])],
-            }
+            'data': [(0.000, [000, 000, 127, 255]),
+                     (0.110, [000, 000, 255, 255]),
+                     (0.125, [000, 000, 255, 255]),
+                     (0.340, [000, 219, 255, 255]),
+                     (0.350, [000, 229, 246, 255]),
+                     (0.375, [n20, 255, 226, 255]),
+                     (0.640, [238, 255, n08, 255]),
+                     (0.650, [246, 245, 000, 255]),
+                     (0.660, [255, 236, 000, 255]),
+                     (0.890, [255, n18, 000, 255]),
+                     (0.910, [231, 000, 000, 255]),
+                     (1.000, [127, 000, 000, 255])],
+        }
         self.assertEqual(utils.cdict2config(cdict()), config)
 
     def test_save(self):
