@@ -2,7 +2,7 @@ Changelog of colormaps
 ===================================================
 
 
-1.8.3 (unreleased)
+1.8.3 (2020-01-28)
 ------------------
 
 - Add test for floatcapabilities in discrete colormaps.
