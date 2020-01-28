@@ -1,12 +1,17 @@
 attrs==19.3.0
--e git+https://github.com/nens/colormaps.git@dc982ec4f565f4a59ef3aa8fd8599e0b91578da9#egg=colormaps
+-e git+https://github.com/nens/colormaps.git@531e13afcef1c80f36dcb18b08edb12c2b784e42#egg=colormaps
 coverage==5.0.3
+entrypoints==0.3
+flake8==3.7.9
 importlib-metadata==1.4.0
+mccabe==0.6.1
 more-itertools==8.1.0
 numpy==1.18.1
 packaging==20.1
 pluggy==0.13.1
 py==1.8.1
+pycodestyle==2.5.0
+pyflakes==2.1.1
 pyparsing==2.4.6
 pytest==5.3.4
 pytest-cov==2.8.1
