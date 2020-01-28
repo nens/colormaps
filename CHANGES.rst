@@ -5,7 +5,9 @@ Changelog of colormaps
 1.8.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Add test for floatcapabilities in discrete colormaps.
+
+- Use int64 for indexing. Its faster.
 
 
 1.8.2 (2019-09-03)
