@@ -5,7 +5,7 @@ Changelog of colormaps
 1.8.4 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Ensure slice indices are integers (DiscreteColormap).
 
 
 1.8.3 (2020-01-28)

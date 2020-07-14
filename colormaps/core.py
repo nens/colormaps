@@ -186,7 +186,7 @@ class DiscreteColormap(BaseColormap):
             limits = np.array(limits).clip(*self.limits)
 
         return np.in1d(
-            self.rgba.view('u4')[limits[0]:limits[1] + 1],
+            self.rgba.view('u4')[int(limits[0]):int(limits[1]) + 1],
             self.invalid.view('u4'), invert=True,
         ).nonzero()[0] + limits[0]
 
