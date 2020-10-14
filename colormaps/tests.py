@@ -7,14 +7,18 @@ import shutil
 import tempfile
 import unittest
 
+from pytest import raises
 import numpy as np
 
-import colormaps
+from colormaps import DiscreteColormap
+from colormaps import GradientColormap
 from colormaps import core
 from colormaps import utils
+import colormaps
 
 MASKED = [0, 0, 255, 255]
 INVALID = [0, 255, 0, 255]
+BLACK = [0, 0, 0, 255]
 
 
 def discrete():
@@ -364,3 +368,91 @@ class TestUtils(unittest.TestCase):
             os.path.exists(os.path.join(path, '{}.json'.format(name))),
         )
         shutil.rmtree(path)
+
+
+def test_create_not_a_dict():
+    with raises(TypeError, match='must be a dict'):
+        colormaps.create(None)
+
+
+def test_create_no_type():
+    with raises(KeyError, match="must contain 'type'"):
+        colormaps.create({})
+
+
+def test_create_wrong_type():
+    with raises(ValueError, match="must be one of"):
+        colormaps.create({"type": "UnknownColormap"})
+
+
+class TestValidation(unittest.TestCase):
+    def setUp(self):
+        self.kwargs = {
+            "data": [[0, BLACK], [1, BLACK]],
+            "validate": True,
+        }
+
+    def test_discrete_wrong_color(self):
+        self.kwargs["data"][0][1] = [0, 0, 0, 0.0]  # contains a float
+        with raises(ValueError, match="Invalid color"):
+            DiscreteColormap(**self.kwargs)
+
+    def test_discrete_not_unique(self):
+        self.kwargs["data"] = [[0, BLACK], [0, BLACK]]  # not unique
+        with raises(ValueError, match="Duplicate values in data"):
+            DiscreteColormap(**self.kwargs)
+
+    def test_discrete_wrong_masked(self):
+        self.kwargs["masked"] = [0, 0, 0, 0.0]  # contains a float
+        with raises(ValueError, match="Invalid color"):
+            DiscreteColormap(**self.kwargs)
+
+    def test_discrete_wrong_invalid(self):
+        self.kwargs["invalid"] = [0, 0, 0, 0.0]  # contains a float
+        with raises(ValueError, match="Invalid color"):
+            DiscreteColormap(**self.kwargs)
+
+    def test_discrete_negative(self):
+        self.kwargs["data"] = [[-1, BLACK]]  # negative
+        with raises(ValueError, match="Data values cannot be negative"):
+            DiscreteColormap(**self.kwargs)
+
+    def test_gradient_wrong_color(self):
+        self.kwargs["data"][0][1] = [0, 0, 0, 0.0]  # contains a float
+        with raises(ValueError, match="Invalid color"):
+            GradientColormap(**self.kwargs)
+
+    def test_gradient_not_sorted(self):
+        self.kwargs["data"] = [[1, BLACK], [0, BLACK]]  # not sorted
+        with raises(ValueError, match="'data' must be sorted"):
+            GradientColormap(**self.kwargs)
+
+    def test_gradient_log_no_bool(self):
+        self.kwargs["log"] = None  # not a bool
+        with raises(AssertionError, match="'log' must be a bool"):
+            GradientColormap(**self.kwargs)
+
+    def test_gradient_free_no_bool(self):
+        self.kwargs["free"] = None  # not a bool
+        with raises(AssertionError, match="'free' must be a bool"):
+            GradientColormap(**self.kwargs)
+
+    def test_gradient_data_not_sorted(self):
+        self.kwargs["data"] = [[1, BLACK], [0, BLACK]]  # not sorted
+        with raises(ValueError, match="'data' must be sorted"):
+            GradientColormap(**self.kwargs)
+
+    def test_gradient_interp_x_not_sorted(self):
+        self.kwargs["interp"] = [[1, 0], [0, 1]]  # x not sorted
+        with raises(ValueError, match="x-values in interp must be sorted."):
+            GradientColormap(**self.kwargs)
+
+    def test_gradient_interp_y_not_sorted(self):
+        self.kwargs["interp"] = [[0, 1], [1, 0]]  # y not sorted
+        with raises(ValueError, match="y-values in interp must be sorted."):
+            GradientColormap(**self.kwargs)
+
+    def test_gradient_wrong_masked(self):
+        self.kwargs["masked"] = [0, 0, 0, 0.0]  # contains a float
+        with raises(ValueError, match="Invalid color"):
+            GradientColormap(**self.kwargs)

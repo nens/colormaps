@@ -5,7 +5,7 @@ Changelog of colormaps
 1.8.5 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Added optional validation to colormap constructors.
 
 
 1.8.4 (2020-07-14)
