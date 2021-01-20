@@ -5,7 +5,9 @@ Changelog of colormaps
 1.8.5 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Mask values less or equal to zero for logarithmic colormaps (i.e. make them
+  transparent). A user should still provide no or valid limits. Specifying
+  limits outside the log domain will result in a runtime error.
 
 
 1.8.4 (2020-07-14)
