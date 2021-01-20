@@ -118,6 +118,11 @@ class BaseColormap(object):
         nan_mask = ~np.isfinite(values)
         mask = nan_mask if mask is None else mask | nan_mask
 
+        # also mask values outside log's domain
+        if self.log:
+            log_mask = values <= 0
+            mask = mask | log_mask
+
         if not np.any(mask):  # np.any(None) returns False
             return self.convert(values, limits)
         rgba = self.masked * np.ones(values.shape + (4,), 'u1')
