@@ -119,7 +119,7 @@ class BaseColormap(object):
         mask = nan_mask if mask is None else mask | nan_mask
 
         # also mask values outside log's domain
-        if self.log:
+        if getattr(self, "log", False):
             log_mask = values <= 0
             mask = mask | log_mask
 

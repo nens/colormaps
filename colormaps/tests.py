@@ -157,9 +157,9 @@ class TestColormap(unittest.TestCase):
                             data_values=np.exp([3, 5]) - 100)
         self.assertEqual(
             colormap(np.exp([3, 4, 5]) - 100).tolist(),
-            [[127, 000, 000, 255],
-             [191, 000, 000, 255],
-             [255, 000, 000, 255]],
+            [[000, 000, 255, 255],
+             [000, 000, 255, 255],
+             [191, 000, 000, 255]],
         )
 
         # negate interp
@@ -167,9 +167,9 @@ class TestColormap(unittest.TestCase):
                             data_values=-np.exp([3, 5]))
         self.assertEqual(
             colormap(-np.exp([3, 4, 5])).tolist(),
-            [[127, 000, 000, 255],
-             [191, 000, 000, 255],
-             [255, 000, 000, 255]],
+            [[000, 000, 255, 255],
+             [000, 000, 255, 255],
+             [000, 000, 255, 255]],
         )
 
     def test_gradient_legend_data_limits_doesnt_clip(self):
