@@ -2,7 +2,7 @@ Changelog of colormaps
 ===================================================
 
 
-1.8.5 (unreleased)
+1.8.5 (2021-01-20)
 ------------------
 
 - Mask values less or equal to zero for logarithmic colormaps (i.e. make them
