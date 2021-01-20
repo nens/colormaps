@@ -5,7 +5,7 @@ Changelog of colormaps
 1.8.6 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fixed test.
 
 
 1.8.5 (2021-01-20)
