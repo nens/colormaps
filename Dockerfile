@@ -51,3 +51,5 @@ RUN pip3 install --upgrade virtualenv
 VOLUME /code
 WORKDIR /code
 USER nens
+
+ENV PATH=/code/.venv/bin:$PATH

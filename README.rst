@@ -82,21 +82,19 @@ For development, you can use a docker-compose setup::
     $ docker-compose start
     $ docker-compose exec lib bash
 
-Create & activate a virtualenv::
+Create a virtualenv::
 
-    (docker)$ virtualenv .venv
-    (docker)$ source bin/activate
+    (docker)$ virtualenv .venv  # note that Dockerfile prepends .venv/bin to $PATH
 
 Install stuff and run the tests::
 
-    (docker)(virtualenv)$ pip install -r requirements.txt
-    (docker)(virtualenv)$ pytest
+    (docker)$ pip install -r requirements.txt
+    (docker)$ pip install -e .[test]
+    (docker)$ pytest
 
 Update packages::
     
     (docker)$ rm -rf .venv
     (docker)$ virtualenv .venv
-    (docker)$ source bin/activate
-    (docker)(virtualenv)$ pip install -e .[test]
-    (docker)(virtualenv)$ pip freeze > requirements.txt
-
+    (docker)$ pip install -e .
+    (docker)$ pip freeze | grep -v colormaps > requirements.txt
