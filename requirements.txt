@@ -1,5 +1,4 @@
 attrs==19.3.0
--e git+https://github.com/nens/colormaps.git@531e13afcef1c80f36dcb18b08edb12c2b784e42#egg=colormaps
 coverage==5.0.3
 entrypoints==0.3
 flake8==3.7.9
