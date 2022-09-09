@@ -5,7 +5,7 @@ Changelog of colormaps
 1.8.7 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fixed numpy deprecation warning.
 
 
 1.8.6 (2021-01-20)
