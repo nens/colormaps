@@ -2,7 +2,7 @@ Changelog of colormaps
 ===================================================
 
 
-1.8.7 (unreleased)
+1.8.7 (2022-09-09)
 ------------------
 
 - Fixed numpy deprecation warning.
