@@ -2,12 +2,18 @@
 # (c) Nelen & Schuurmans, see LICENSE.rst.
 
 import numpy as np
-import sys
 
 MASKED = 0, 0, 0, 0
 INVALID = 0, 0, 0, 0
 
 registered = {}
+
+
+def validate_color(color):
+    if len(color) != 4 or not all(
+        0 <= e < 256 and isinstance(e, int) for e in color
+    ):
+        raise ValueError(f"Invalid color: {color}")
 
 
 class Data(object):
@@ -142,15 +148,34 @@ class DiscreteColormap(BaseColormap):
                                upper=self.limits[1],
                                name=self.__class__.__name__)
 
-    def __init__(self, data, masked=MASKED, invalid=INVALID, labels={}):
-        """
-        Build the look-up table.
+    def __init__(self, data,
+                 masked=MASKED, invalid=INVALID, labels={}, validate=False):
+        """Return colormap instance.
+
+        :param data: list of (value, color)-tuples
+        :param masked: color to use for 'no data'
+        :param invalid: color to use for values not in data
+        :param labels: dict defining locale-specific descriptions
+
+        The values in data must be unique, nonnegative ints. The colors are
+        specified as (r, g, b, a) tuples, with each component having an integer
+        value ranging from 0 to 255.
         """
         values, colors = zip(*data)
-
         self.limits = min(values), max(values)
-        self.masked = np.array(masked, 'u1')
-        self.invalid = np.array(invalid, 'u1')
+
+        if validate:
+            for color in colors:
+                validate_color(color)
+            if len(values) != len(set(values)):
+                raise ValueError("Duplicate values in data")
+            if self.limits[0] < 0:
+                raise ValueError("Data values cannot be negative")
+            validate_color(masked)
+            validate_color(invalid)
+
+        self.masked = np.array(masked, dtype='u1')
+        self.invalid = np.array(invalid, dtype='u1')
         self.labels = {k: dict(v) for k, v in labels.items()}
         self.rgba = self.invalid * np.ones((self.limits[1] + 2, 4), dtype='u1')
         self.rgba[-1] = self.masked
@@ -230,18 +255,55 @@ class GradientColormap(BaseColormap):
 
     def __init__(self, data,
                  size=256, log=False, free=True,
-                 interp=None, masked=MASKED, labels={}):
-        """
-        Build the look-up table.
+                 interp=None, masked=MASKED, labels={}, validate=False):
+        """Return colormap instance.
 
-        :param data: list of (number, rgba tuple) that defines the stops
+        :param data: list of (value, color)-tuples that defines the stops
         :param size: size of the generated look-up table
         :param free: use data limits instead of colormap limits
         :param log: use a log scale whenever appropriate
         :param interp: [(x1, y1), (x2, y2), ...]
-        :param masked: rgba tuple to use as masked color
+        :param masked: color
+
+
+        The values in data must be sorted. The colors are specified as (r, g,
+        b, a) tuples, with each component having an integer value ranging from
+        0 to 255.
+
+        The colormap constructs a look-up table that distributes its entries
+        evenly over the interval spanned by the values in the data parameter.
+
+        In some cases it is more desirable to have finer control over how the
+        look-up table entries are distributed. Consider for example the
+        elevation of The Netherlands, where it is desirable to have at the same
+        time more detail in the densely populated areas near the coast, where
+        the elevation is within a few meters from sea level, and also in the
+        higher grounds where the elevation is more on the order of 100 meter.
+
+        To achieve this, a transformation can be defined using the `interp`
+        parameter, that is applied to both to the values in the `data`
+        parameter and to the input data to be colored.
+
+        In a similar fashion, `log=True` can be supplied to apply a log
+        function to the values and the input data to achieve a better
+        distribution in inputs that have an exponential nature.
         """
         values, colors = zip(*data)
+
+        if validate:
+            for color in colors:
+                validate_color(color)
+            if values != tuple(sorted(values)):
+                raise ValueError("'data' must be sorted.")
+            assert isinstance(free, bool), "'free' must be a bool."
+            assert isinstance(log, bool), "'log' must be a bool."
+            if interp is not None:
+                interp_x, interp_y = zip(*interp)
+                if interp_x != tuple(sorted(interp_x)):
+                    raise ValueError("x-values in interp must be sorted.")
+                if interp_y != tuple(sorted(interp_y)):
+                    raise ValueError("y-values in interp must be sorted.")
+            validate_color(masked)
 
         # options
         self.log = log
@@ -325,7 +387,28 @@ def get(name):
         raise NameError("'{}' is not in registered colormaps".format(name))
 
 
-def create(colormap):
+def create(colormap, validate=False):
     """ Create a colormap from a dictionary. """
-    kwargs = colormap.copy()
-    return getattr(sys.modules[__name__], kwargs.pop('type'))(**kwargs)
+    if not isinstance(colormap, dict):
+        raise TypeError("A colormap definition must be a dict")
+
+    try:
+        name = colormap["type"]
+    except KeyError:
+        raise KeyError("A colormap definition must contain 'type'")
+
+    try:
+        cls = COLORMAP_TYPES[name]
+    except KeyError:
+        error = f"'type' must be one of {COLORMAP_TYPES}, not {name}"
+        raise ValueError(error)
+
+    kwargs = {"validate": validate, **colormap}
+    del kwargs["type"]
+    return cls(**kwargs)
+
+
+COLORMAP_TYPES = {
+    DiscreteColormap.__name__: DiscreteColormap,
+    GradientColormap.__name__: GradientColormap,
+}
