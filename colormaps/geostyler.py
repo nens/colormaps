@@ -3,6 +3,7 @@
 Import colormaps from GeoStyler format.
 """
 
+
 def hex_to_rgba(hex_color, opacity=1.0):
     """
     Convert hex color string to RGBA array.
@@ -51,15 +52,16 @@ def extract_colormap_entries(raster_symbolizer):
         color_map = raster_symbolizer["colorMap"]
         return color_map["colorMapEntries"], color_map["type"]
 
-    except (KeyError, IndexError, TypeError) as e:
-        raise KeyError("Invalid GeoStyler structure: missing required fields") from e
+    except (KeyError, IndexError, TypeError):
+        raise KeyError("Invalid GeoStyler structure: missing required fields")
 
 
 def import_from_geostyler(raster_symbolizer):
     """
     Import colormap from a Geostyler raster symbolizaer
 
-    For "intervals" type, creates discrete bands by duplicating entries at transition points.
+    For "intervals" type, creates discrete bands by duplicating entries
+    at transitionpoints.
     For "values" type, creates discrete colormap with each entry as-is.
     For "ramp" type, creates smooth gradients with single entries.
 
@@ -74,7 +76,7 @@ def import_from_geostyler(raster_symbolizer):
     if not entries:
         raise ValueError("No colormap entries found")
 
-    # Sort entries by quantity to ensure proper ordering (create copy to avoid side effects)
+    # Sort entries by quantity to ensure proper ordering
     entries = sorted(entries, key=lambda x: x["quantity"])
 
     # Transform all entries to colormap format
@@ -125,7 +127,10 @@ def _extract_labels(entries):
 
 
 def _transform_color_entry(entry):
-    return [entry["quantity"], hex_to_rgba(entry["color"], entry.get("opacity", 1.0))]
+    return [
+        entry["quantity"],
+        hex_to_rgba(entry["color"], entry.get("opacity", 1.0))
+    ]
 
 
 def _create_interval_data(data):
@@ -142,7 +147,7 @@ def _create_interval_data(data):
     for i, transformed_entry in enumerate(data):
         value, rgba = transformed_entry
 
-        # Add a duplicate of the previous entry's value (unless it's the first entry)
+        # Add a duplicate of the previous entry's value (unless it's the first)
         if i > 0:
             previous_value = data[i - 1][0]
             result.append([previous_value, rgba])
