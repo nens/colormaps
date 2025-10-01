@@ -8,3 +8,4 @@ from colormaps.core import DiscreteColormap  # NOQA
 from colormaps.core import GradientColormap  # NOQA
 
 from colormaps.managers import Manager  # NOQA
+from colormaps.geostyler import import_from_geostyler  # NOQA

@@ -2,10 +2,11 @@ Changelog of colormaps
 ===================================================
 
 
-1.8.8 (unreleased)
+1.9.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Added a function to construct colormaps from Geostyler RasterSymbolizer format:
+  `import_from_geostyler()`.
 
 
 1.8.7 (2022-09-09)
