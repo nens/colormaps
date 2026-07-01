@@ -95,6 +95,33 @@ class TestColormap(unittest.TestCase):
         colormap = gradient()
         self.assertEqual(colormap([np.nan]).tolist(), [[0, 0, 255, 255]])
 
+    def test_gradient_bin(self):
+        bin_map = colormaps.create({
+            'type': 'GradientColormap',
+            'free': False,
+            'data': [
+                [0.2, [0, 42, 255, 255]], 
+                [0.2, [0, 212, 255, 255]], 
+                [0.4, [0, 212, 255, 255]], 
+                [0.4, [123, 255, 123, 255]], 
+                [0.6, [123, 255, 123, 255]], 
+                [0.6, [255, 230, 0, 255]], 
+                [0.8, [255, 230, 0, 255]], 
+                [0.8, [255, 72, 0, 255]], 
+                [1.0, [255, 72, 0, 255]], 
+                [1.0, [127, 0, 0, 255]]]
+        })
+
+        self.assertEqual(
+            bin_map([-2, 0.05, 0.2, 0.21, 1.0, 1.1]).tolist(),
+            [[0, 42, 255, 255],
+             [0, 42, 255, 255],
+             [0, 42, 255, 255],
+             [0, 212, 255, 255],
+             [127, 0, 0, 255],
+             [127, 0, 0, 255]]
+        )
+
     def test_gradient_interp(self):
         # piecewise interp
         colormap = gradient(interp=[(3, 0), (3.1, 0.5), (5, 1)])

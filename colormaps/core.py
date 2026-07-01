@@ -269,6 +269,10 @@ class GradientColormap(BaseColormap):
             self.rgba[: -1, i] = np.interp(values, stops, c)
         self.rgba[-1, :] = self.rgba[-2, :]
 
+        # Explicitely handle bottom category
+        if stops[0] == stops[1]:
+            self.rgba[0, :] = data[0][1]
+
     def convert(self, data, limits):
         """
         Return rgba.

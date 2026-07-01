@@ -7,6 +7,7 @@ Changelog of colormaps
 
 - Added a function to construct colormaps from Geostyler RasterSymbolizer format:
   `import_from_geostyler()`.
+- The bottom category is now properly added to self.rgba in case of GradientColormap with bins.
 
 
 1.8.7 (2022-09-09)
